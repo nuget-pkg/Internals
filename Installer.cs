@@ -18,10 +18,11 @@ namespace Global
             SafeZipExtract(zipPath, installDir);
             return installDir;
         }
-        public static string InstallResourceDll(Assembly assembly, string targetDir, string name)
+        public static string? InstallResourceDll(Assembly assembly, string targetDir, string name)
         {
             string guid = Sys.GuidString();
             var dllBytes = Sys.ResourceAsBytes(assembly, name);
+            if (dllBytes == null) return null;
             SHA256 crypto = new SHA256CryptoServiceProvider();
             byte[] hashValue = crypto.ComputeHash(dllBytes);
             string sha256 = String.Join("", hashValue.Select(x => x.ToString("x2")).ToArray());
@@ -30,10 +31,11 @@ namespace Global
             SafeFileWrite(dllPath, dllBytes);
             return dllPath;
         }
-        public static string InstallResourceZip(Assembly assembly, string targetDir, string name)
+        public static string? InstallResourceZip(Assembly assembly, string targetDir, string name)
         {
             string guid = Sys.GuidString();
             var zipBytes = Sys.ResourceAsBytes(assembly, name);
+            if (zipBytes == null) return null;
             SHA256 crypto = new SHA256CryptoServiceProvider();
             byte[] hashValue = crypto.ComputeHash(zipBytes);
             string sha256 = String.Join("", hashValue.Select(x => x.ToString("x2")).ToArray());
@@ -62,7 +64,7 @@ namespace Global
         public static void SafeFileWrite(string filePath, byte[] contents)
         {
             if (File.Exists(filePath)) return;
-            Console.Error.WriteLine($"[Log] Writing to {filePath}...");
+            //Console.Error.WriteLine($"[Log] Writing to {filePath}...");
             string guid = Sys.GuidString();
             Sys.PrepareForFile(filePath);
             File.WriteAllBytes($"{filePath}.{guid}", contents);
