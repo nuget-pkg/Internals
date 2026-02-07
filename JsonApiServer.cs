@@ -24,9 +24,9 @@ namespace Global
             }
             var name = Sys.UTF8AddrToString(nameAddr);
             var input = Sys.UTF8AddrToString(inputAddr);
-            EasyObject args = FromJson(input);
+            EasyObject args = FromJson(input)!;
             MethodInfo mi = apiType.GetMethod(name);
-            dynamic result = null;
+            dynamic? result = null;
             if (mi == null)
             {
                 result = $"API not found: {name}";
@@ -51,9 +51,9 @@ namespace Global
         }
         public string HandleDotNetCall(Type apiType, string name, string input)
         {
-            EasyObject args = FromJson(input);
+            EasyObject args = FromJson(input)!;
             MethodInfo mi = apiType.GetMethod(name);
-            dynamic result = null;
+            dynamic? result = null;
             if (mi == null)
             {
                 result = $"API not found: {name}";

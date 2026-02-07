@@ -465,7 +465,7 @@ namespace Global
         public static EasyObject ResourceAsEasyObject(Assembly assembly, string name)
         {
             string? json = ResourceAsText(assembly, name);
-            return EasyObject.FromJson(json);
+            return EasyObject.FromJson(json)!;
         }
         public static byte[]? ToUtf8Bytes(string s)
         {

@@ -11,36 +11,36 @@ namespace Global
         delegate IntPtr proto_Call(IntPtr name, IntPtr args);
         public JsonApiClient(string dllSpec)
         {
-            string dllPath = Sys.FindExePath(dllSpec);
+            string? dllPath = Sys.FindExePath(dllSpec);
             if (dllPath is null)
             {
                 EasyObject.Log(dllSpec, "dllSpec");
                 EasyObject.Log(dllPath, "dllPath");
                 Environment.Exit(1);
             }
-            this.LoadDll(dllPath);
+            this.LoadDll(dllPath!);
         }
         public JsonApiClient(string dllSpec, string cwd)
         {
-            string dllPath = Sys.FindExePath(dllSpec, cwd);
+            string? dllPath = Sys.FindExePath(dllSpec, cwd);
             if (dllPath is null)
             {
                 EasyObject.Log(dllSpec, "dllSpec");
                 EasyObject.Log(dllPath, "dllPath");
                 Environment.Exit(1);
             }
-            this.LoadDll(dllPath);
+            this.LoadDll(dllPath!);
         }
         public JsonApiClient(string dllSpec, Assembly assembly)
         {
-            string dllPath = Sys.FindExePath(dllSpec, assembly);
+            string? dllPath = Sys.FindExePath(dllSpec, assembly);
             if (dllPath is null)
             {
                 EasyObject.Log(dllSpec, "dllSpec");
                 EasyObject.Log(dllPath, "dllPath");
                 Environment.Exit(1);
             }
-            this.LoadDll(dllPath);
+            this.LoadDll(dllPath!);
         }
         private void LoadDll(string dllPath)
         {
@@ -74,12 +74,12 @@ namespace Global
             Marshal.FreeHGlobal(pArgsJson);
             if (result.StartsWith("\""))
             {
-                string error = EasyObject.FromJson(result).Cast<string>();
+                string error = EasyObject.FromJson(result)!.Cast<string>();
                 throw new Exception(error);
             }
             else if (result.StartsWith("["))
             {
-                var list = EasyObject.FromJson(result);
+                var list = EasyObject.FromJson(result)!;
                 if (list.Count == 0) return EasyObject.FromObject(null);
                 return list[0];
             }
