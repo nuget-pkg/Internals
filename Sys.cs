@@ -15,7 +15,7 @@ namespace Global
     using System.Text;
     using System.Threading;
     using static Global.EasyObject;
-    internal static class Sys
+    internal static partial class Sys
     {
         public static string GetCwd()
         {
