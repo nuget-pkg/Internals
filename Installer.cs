@@ -23,7 +23,9 @@ namespace Global
             string guid = Sys.GuidString();
             var dllBytes = Sys.ResourceAsBytes(assembly, name);
             if (dllBytes == null) return null;
+#pragma warning disable SYSLIB0021
             SHA256 crypto = new SHA256CryptoServiceProvider();
+#pragma warning restore SYSLIB0021
             byte[] hashValue = crypto.ComputeHash(dllBytes);
             string sha256 = String.Join("", hashValue.Select(x => x.ToString("x2")).ToArray());
             string dllName = $"{Path.GetFileNameWithoutExtension(name.Replace(":", "-"))}-{sha256}.dll";
@@ -36,7 +38,9 @@ namespace Global
             string guid = Sys.GuidString();
             var zipBytes = Sys.ResourceAsBytes(assembly, name);
             if (zipBytes == null) return null;
+#pragma warning disable SYSLIB0021
             SHA256 crypto = new SHA256CryptoServiceProvider();
+#pragma warning restore SYSLIB0021
             byte[] hashValue = crypto.ComputeHash(zipBytes);
             string sha256 = String.Join("", hashValue.Select(x => x.ToString("x2")).ToArray());
             string zipName = $"{Path.GetFileNameWithoutExtension(name.Replace(":", "-"))}-{sha256}";

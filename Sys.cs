@@ -7,14 +7,16 @@ namespace Global
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Net.NetworkInformation;
     using System.Net.Sockets;
-    using System.Net;
     using System.Reflection;
     using System.Runtime.InteropServices;
+    using System.Security.Cryptography;
     using System.Text;
     using System.Threading;
     using static Global.EasyObject;
+
     internal static partial class Sys
     {
         public static string GetCwd()
@@ -36,7 +38,7 @@ namespace Global
         }
         public static string GetDirectoryName(string path)
         {
-            return Path.GetDirectoryName(path);
+            return Path.GetDirectoryName(path)!;
         }
         public static string GetBaseName(string path)
         {
@@ -44,18 +46,18 @@ namespace Global
         }
         public static Assembly? AssemblyForTypeName(string typeName)
         {
-            Type type = Type.GetType(typeName);
+            Type? type = Type.GetType(typeName);
             if (type == null) return null;
             return type.Assembly;
         }
         public static object? CallAssemblyStaticMethod(Assembly asm, string typeName, string methodName, params object[] args)
         {
             if (asm == null) return null;
-            System.Type type = asm.GetType(typeName, false);
+            System.Type? type = asm.GetType(typeName, false);
             if (type == null) return null;
-            System.Reflection.MethodInfo method = type.GetMethod(methodName, System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+            System.Reflection.MethodInfo? method = type.GetMethod(methodName, System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
             if (method == null) return null;
-            object methdResult = method.Invoke(null, args);
+            object? methdResult = method.Invoke(null, args);
             return methdResult;
         }
         public static int RunCommand(string exe, params string[] args)
@@ -127,7 +129,7 @@ namespace Global
             List<string> lines = new List<string>();
             using (StringReader sr = new StringReader(text))
             {
-                string line;
+                string? line;
                 while ((line = sr.ReadLine()) != null)
                 {
                     lines.Add(line);
@@ -185,10 +187,12 @@ namespace Global
         }
         public static string AssemblyDirectory(Assembly assembly)
         {
-            string codeBase = assembly.CodeBase;
+#pragma warning disable SYSLIB0012
+            string codeBase = assembly.CodeBase!;
+#pragma warning restore SYSLIB0012
             UriBuilder uri = new UriBuilder(codeBase);
             string path = Uri.UnescapeDataString(uri.Path);
-            return Path.GetDirectoryName(path);
+            return Path.GetDirectoryName(path)!;
         }
         public static string GuidString()
         {
@@ -222,7 +226,7 @@ namespace Global
         }
         public static string[] ExpandWildcard(string path)
         {
-            string dir = Path.GetDirectoryName(path);
+            string dir = Path.GetDirectoryName(path)!;
             if (string.IsNullOrEmpty(dir)) dir = ".";
             string fname = Path.GetFileName(path);
             string[] files = Directory.GetFiles(dir, fname);
@@ -245,7 +249,9 @@ namespace Global
         }
         public static string GetStringFromUrl(string url)
         {
+#pragma warning disable SYSLIB0014
             HttpWebRequest? request = WebRequest.Create(url) as HttpWebRequest;
+#pragma warning restore SYSLIB0014
             HttpWebResponse response = (HttpWebResponse)request!.GetResponse();
             WebHeaderCollection header = response.Headers;
             using (var reader = new System.IO.StreamReader(response.GetResponseStream(), Encoding.UTF8))
@@ -333,7 +339,7 @@ namespace Global
         }
         public static string WideAddrToString(IntPtr s)
         {
-            return Marshal.PtrToStringUni(s);
+            return Marshal.PtrToStringUni(s)!;
         }
         public static IntPtr StringToUTF8Addr(string s)
         {
@@ -385,7 +391,7 @@ namespace Global
             process.OutputDataReceived += (sender, e) => { Console.WriteLine(e.Data); };
             process.ErrorDataReceived += (sender, e) => { Console.Error.WriteLine(e.Data); };
             process.Start();
-            Console.CancelKeyPress += delegate (object sender, ConsoleCancelEventArgs e) { process.Kill(); };
+            Console.CancelKeyPress += (delegate (object sender, ConsoleCancelEventArgs e) { process.Kill(); })!;
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
             process.WaitForExit();
@@ -399,7 +405,7 @@ namespace Global
         }
         public static string AssemblyName(Assembly assembly)
         {
-            return System.Reflection.AssemblyName.GetAssemblyName(assembly.Location).Name;
+            return System.Reflection.AssemblyName.GetAssemblyName(assembly.Location).Name!;
         }
         public static int FreeTcpPort()
         {
@@ -413,7 +419,7 @@ namespace Global
         public static string FullName(dynamic x)
         {
             if (x is null) return "null";
-            string fullName = ((object)x).GetType().FullName;
+            string fullName = ((object)x).GetType().FullName!;
             return fullName.Split('`')[0];
         }
         //public static string ToJson(object x, bool indent = false, bool display = false)
@@ -421,10 +427,10 @@ namespace Global
         {
             return assembly.GetManifestResourceNames();
         }
-        public static Stream ResourceAsStream(Assembly assembly, string name)
+        public static Stream? ResourceAsStream(Assembly assembly, string name)
         {
             string resourceName = name.Contains(":") ? name.Replace(":", ".") : $"{AssemblyName(assembly)}.{name}";
-            Stream stream = assembly.GetManifestResourceStream(resourceName);
+            Stream? stream = assembly.GetManifestResourceStream(resourceName);
             return stream;
         }
         public static string? StreamAsText(Stream? stream)
@@ -439,10 +445,10 @@ namespace Global
         public static string? ResourceAsText(Assembly assembly, string name)
         {
             string resourceName = name.Contains(":") ? name.Replace(":", ".") : $"{AssemblyName(assembly)}.{name}";
-            Stream stream = assembly.GetManifestResourceStream(resourceName);
+            Stream? stream = assembly.GetManifestResourceStream(resourceName);
             return StreamAsText(stream);
         }
-        public static byte[]? StreamAsBytes(Stream stream)
+        public static byte[]? StreamAsBytes(Stream? stream)
         {
             if (stream is null) return null;
             long pos = stream.Position;
@@ -454,7 +460,7 @@ namespace Global
         public static byte[]? ResourceAsBytes(Assembly assembly, string name)
         {
             string resourceName = name.Contains(":") ? name.Replace(":", ".") : $"{AssemblyName(assembly)}.{name}";
-            Stream stream = assembly.GetManifestResourceStream(resourceName);
+            Stream? stream = assembly.GetManifestResourceStream(resourceName);
             return StreamAsBytes(stream);
         }
         public static EasyObject? StreamAsJson(Stream stream)
@@ -479,12 +485,14 @@ namespace Global
         }
         public static void PrepareForFile(string filePath)
         {
-            Prepare(Path.GetDirectoryName(filePath));
+            Prepare(Path.GetDirectoryName(filePath)!);
         }
         public static void DownloadBinaryFromUrl(string url, string destinationPath)
         {
             PrepareForFile(destinationPath);
+#pragma warning disable SYSLIB0014
             WebRequest objRequest = System.Net.HttpWebRequest.Create(url);
+#pragma warning restore SYSLIB0014
             var objResponse = objRequest.GetResponse();
             byte[] buffer = new byte[32768];
             using (Stream input = objResponse.GetResponseStream())

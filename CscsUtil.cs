@@ -54,7 +54,7 @@ namespace Global
         }
         private void ParseProjectHelper(string projFileName)
         {
-            string home = Environment.GetEnvironmentVariable("HOME");
+            string? home = Environment.GetEnvironmentVariable("HOME");
             if (home != null)
             {
                 projFileName = projFileName.Replace("$(HOME)", home);
@@ -72,7 +72,7 @@ namespace Global
                 //SrcList.Add(AdjustPath(projFileName));
                 SrcList.Add(projFileName);
             }
-            string projDir = Path.GetDirectoryName(projFileName);
+            string projDir = Path.GetDirectoryName(projFileName)!;
             Directory.SetCurrentDirectory(projDir);
             string source = File.ReadAllText(projFileName);
             string[] lines = Sys.TextToLines(source).ToArray();
@@ -113,7 +113,7 @@ namespace Global
         }
         private void SearchinDirectory(string dirName)
         {
-            string home = Environment.GetEnvironmentVariable("HOME");
+            string? home = Environment.GetEnvironmentVariable("HOME");
             if (home != null)
             {
                 dirName = dirName.Replace("$(HOME)", home);
@@ -132,7 +132,7 @@ namespace Global
             string source = File.ReadAllText(srcPath);
             string cwd = Directory.GetCurrentDirectory();
             Echo(cwd, "cwd");
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(srcPath));
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(srcPath)!);
             string[] lines = Sys.TextToLines(source).ToArray();
             for (int i = 0; i < lines.Length; i++)
             {
@@ -171,7 +171,7 @@ namespace Global
                     if (m.Success)
                     {
                         string resName = m.Groups[1].Value;
-                        string home = Environment.GetEnvironmentVariable("HOME");
+                        string? home = Environment.GetEnvironmentVariable("HOME");
                         if (home != null)
                         {
                             resName = resName.Replace("$(HOME)", home);
