@@ -358,6 +358,16 @@ namespace Global
             Marshal.Copy(s, buffer, 0, buffer.Length);
             return Encoding.UTF8.GetString(buffer);
         }
+        public static IntPtr ReassignThreadLocalStringPointer(ThreadLocal<IntPtr> ptr, string s)
+        {
+            if (ptr.Value != IntPtr.Zero)
+            {
+                Sys.FreeHGlobal(ptr.Value);
+                ptr.Value = IntPtr.Zero;
+            }
+            ptr.Value = Sys.StringToUTF8Addr(s);
+            return ptr.Value;
+        }
         public static string DateTimeString(DateTime x)
         {
             return x.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz");
