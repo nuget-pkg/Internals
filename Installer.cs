@@ -7,7 +7,12 @@ namespace Global
     using System.Security.Cryptography;
     using System.Reflection;
     using System.Text;
-    internal class Installer
+#if GLOBAL_SYS
+    public
+ #else
+    internal
+#endif
+    class Installer
     {
         public static string InstallZipFromURL(string url, string targetDir, string baseName)
         {

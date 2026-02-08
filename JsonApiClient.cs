@@ -4,7 +4,12 @@ namespace Global
     using System.Reflection;
     using System.Runtime.InteropServices;
 
-    internal class JsonApiClient
+#if GLOBAL_SYS
+    public
+ #else
+    internal
+#endif
+    class JsonApiClient
     {
         IntPtr Handle = IntPtr.Zero;
         IntPtr CallPtr = IntPtr.Zero;

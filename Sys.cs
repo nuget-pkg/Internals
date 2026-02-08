@@ -1,5 +1,3 @@
-//css_nuget EasyObject;
-//css_nuget LiteDB;
 namespace Global
 {
     using System;
@@ -17,7 +15,12 @@ namespace Global
     using System.Threading;
     using static Global.EasyObject;
 
-    internal static partial class Sys
+#if GLOBAL_SYS
+    public
+ #else
+    internal
+#endif
+    static partial class Sys
     {
         public static string GetCwd()
         {

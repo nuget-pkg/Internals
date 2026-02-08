@@ -3,7 +3,12 @@ namespace Global
     using System;
     using System.Diagnostics;
     using System.Text;
-    internal static partial class Sys
+#if GLOBAL_SYS
+    public
+ #else
+    internal
+ #endif
+    static partial class Sys
     {
         public static string GetProcessStdout(Encoding encoding, bool debug, string exe, params string[] args)
         {

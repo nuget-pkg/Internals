@@ -6,8 +6,12 @@ namespace Global
     using System.Text.RegularExpressions;
     using Global;
     using static Global.EasyObject;
-
-    internal class CscsUtil
+#if GLOBAL_SYS
+    public
+ #else
+    internal
+#endif
+    class CscsUtil
     {
         public List<string> SrcList = new List<string> { };
         public List<string> PkgList = new List<string> { };

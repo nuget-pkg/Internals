@@ -6,7 +6,12 @@ namespace Global
     using System.Threading;
     using static Global.EasyObject;
 
-    internal class JsonApiServer
+#if GLOBAL_SYS
+    public
+ #else
+    internal
+#endif
+    class JsonApiServer
     {
         IntPtr Handle = IntPtr.Zero;
         IntPtr CallPtr = IntPtr.Zero;
