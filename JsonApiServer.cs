@@ -18,11 +18,11 @@ namespace Global
         static ThreadLocal<IntPtr> HandleCallPtr = new ThreadLocal<IntPtr>();
         public IntPtr HandleNativeCall(Type apiType, IntPtr nameAddr, IntPtr inputAddr)
         {
-            if (HandleCallPtr.Value != IntPtr.Zero)
-            {
-                Sys.FreeHGlobal(HandleCallPtr.Value);
-                HandleCallPtr.Value = IntPtr.Zero;
-            }
+            //if (HandleCallPtr.Value != IntPtr.Zero)
+            //{
+            //    Sys.FreeHGlobal(HandleCallPtr.Value);
+            //    HandleCallPtr.Value = IntPtr.Zero;
+            //}
             var name = Sys.UTF8AddrToString(nameAddr);
             var input = Sys.UTF8AddrToString(inputAddr);
             EasyObject args = FromJson(input)!;
@@ -47,8 +47,9 @@ namespace Global
                 }
             }
             string output = FromObject(result).ToJson();
-            HandleCallPtr.Value = Sys.StringToUTF8Addr(output);
-            return HandleCallPtr.Value;
+            //HandleCallPtr.Value = Sys.StringToUTF8Addr(output);
+            //return HandleCallPtr.Value;
+            return Sys.ReassignThreadLocalStringPointer(HandleCallPtr, output);
         }
         public IntPtr HandleNativeCallBase64(Type apiType, IntPtr nameAddr, IntPtr inputAddr)
         {
