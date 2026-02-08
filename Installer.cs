@@ -55,6 +55,14 @@ namespace Global
             SafeZipExtract(zipPath, extractPath);
             return extractPath;
         }
+        public static Assembly? LoadAssemblyFromResourceZip(Assembly assembly, string targetDir, string resName, string asmName)
+        {
+            string? instDir = InstallResourceZip(assembly, targetDir, resName);
+            if (instDir == null) return null;
+            var asm = Assembly.LoadFrom(Path.Combine(instDir, asmName));
+            return asm;
+
+        }
         public static void SafeDownload(string url, string filePath)
         {
             if (File.Exists(filePath)) return;
