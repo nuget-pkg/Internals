@@ -449,10 +449,11 @@ namespace Global
         }
         public static string? StreamAsText(Stream? stream)
         {
-            if (stream is null) return null; // "";
+            if (stream is null) return null;
             long pos = stream.Position;
             var streamReader = new StreamReader(stream);
             var text = streamReader.ReadToEnd();
+            text = text.Replace("\r\n", "\n");
             stream.Position = pos;
             return text;
         }
@@ -479,7 +480,6 @@ namespace Global
         }
         public static Assembly? LoadFromResource(Assembly assembly, string name)
         {
-            //string resourceName = name.Contains(":") ? name.Replace(":", ".") : $"{AssemblyName(assembly)}.{name}";
             byte[]? bytes = ResourceAsBytes(assembly, name);
             //return StreamAsBytes(stream);
             return Assembly.Load(bytes);
