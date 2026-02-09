@@ -1,3 +1,4 @@
+//
 namespace Global
 {
     using System;
