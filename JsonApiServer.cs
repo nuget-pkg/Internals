@@ -1,3 +1,4 @@
+#if USE_JSON_API
 namespace Global
 {
     using System;
@@ -8,7 +9,7 @@ namespace Global
 
 #if GLOBAL_SYS
     public
- #else
+#else
     internal
 #endif
     class JsonApiServer
@@ -120,3 +121,4 @@ namespace Global
     }
 
 }
+#endif

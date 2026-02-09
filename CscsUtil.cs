@@ -1,3 +1,4 @@
+#if USE_CSCS_UTIL
 namespace Global
 {
     using System;
@@ -8,7 +9,7 @@ namespace Global
     using static Global.EasyObject;
 #if GLOBAL_SYS
     public
- #else
+#else
     internal
 #endif
     class CscsUtil
@@ -211,3 +212,4 @@ namespace Global
         }
     }
 }
+#endif
