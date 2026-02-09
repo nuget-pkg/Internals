@@ -481,7 +481,6 @@ namespace Global
         public static Assembly? LoadFromResource(Assembly assembly, string name)
         {
             byte[]? bytes = ResourceAsBytes(assembly, name);
-            //return StreamAsBytes(stream);
             return Assembly.Load(bytes);
         }
         public static EasyObject? StreamAsJson(Stream stream)
