@@ -3,13 +3,10 @@ namespace Global
 {
     using Global;
     using LiteDB;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.IO;
     using System.Linq;
-    using static Global.EasyObject;
-    using static Global.LiteDBProps;
+    //using static Global.EasyObject;
     public class LiteDBProps : IExportToPlainObject
     {
         public class Prop
@@ -50,8 +47,6 @@ namespace Global
         }
         public EasyObject Get(string name, object? fallback = null)
         {
-            //var keys = this.Keys;
-            //if (!keys.Contains(name)) return FromObject(fallback);
             using (var connection = new LiteDatabase(new ConnectionString(this.filePath)
             {
                 Connection = ConnectionType.Shared
@@ -63,14 +58,14 @@ namespace Global
                 connection.Commit();
                 if (result == null)
                 {
-                    return FromObject(fallback);
+                    return EasyObject.FromObject(fallback);
                 }
-                return FromObject(result.Data);
+                return EasyObject.FromObject(result.Data);
             }
         }
         public void Put(string name, dynamic? data)
         {
-            if (data is EasyObject) data = ((EasyObject)data).ToObject();
+            data = EasyObject.FromObject(data).ExportToPlainObject();
             using (var connection = new LiteDatabase(new ConnectionString(this.filePath)
             {
                 Connection = ConnectionType.Shared
@@ -127,18 +122,16 @@ namespace Global
                 connection.Commit();
             }
         }
-
         public object? ExportToPlainObject()
         {
             var keys = this.Keys;
-            EasyObject eo = NewArray();
+            EasyObject eo = EasyObject.NewArray();
             foreach (var key in keys)
             {
                 eo[key] = this.Get(key);
             }
             return eo.ToObject();
         }
-
         public List<string> Keys
         {
             get
@@ -164,7 +157,7 @@ namespace Global
         }
         public override string ToString()
         {
-            return FromObject(this).ToJson(indent: true);
+            return EasyObject.FromObject(this).ToJson(indent: true);
         }
     }
 }
