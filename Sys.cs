@@ -476,6 +476,13 @@ namespace Global
             Stream? stream = assembly.GetManifestResourceStream(resourceName);
             return StreamAsBytes(stream);
         }
+        public static Assembly? LoadFromResource(Assembly assembly, string name)
+        {
+            //string resourceName = name.Contains(":") ? name.Replace(":", ".") : $"{AssemblyName(assembly)}.{name}";
+            byte[]? bytes = ResourceAsBytes(assembly, name);
+            //return StreamAsBytes(stream);
+            return Assembly.Load(bytes);
+        }
         public static EasyObject? StreamAsJson(Stream stream)
         {
             string? json = StreamAsText(stream);
