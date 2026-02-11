@@ -1,11 +1,11 @@
-#if USE_CSCS_UTIL
+//#if USE_CSCS_UTIL
 namespace Global
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text.RegularExpressions;
-    using Global;
+    //using Global;
     using static Global.EasyObject;
 #if GLOBAL_SYS
     public
@@ -235,4 +235,4 @@ namespace Global
         }
     }
 }
-#endif
+//#endif
