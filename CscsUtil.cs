@@ -186,6 +186,21 @@ namespace Global
                     if (m.Success)
                     {
                         string asmName = m.Groups[1].Value;
+#if false
+                        if (!AsmList.Contains(asmName))
+                        {
+                            AsmList.Add(asmName);
+                        }
+                        if (home != null)
+                        {
+                            resName = resName.Replace("$(HOME)", home);
+                        }
+#endif
+                        if (!asmName.StartsWith("$"))
+                        {
+                            asmName = Path.GetFullPath(asmName);
+                        }
+                        asmName = AdjustPath(asmName);
                         if (!AsmList.Contains(asmName))
                         {
                             AsmList.Add(asmName);
