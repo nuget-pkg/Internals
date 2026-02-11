@@ -14,7 +14,7 @@ namespace Global
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading;
-    using static Global.EasyObject;
+    //using static Global.EasyObject;
 
 #if GLOBAL_SYS
     public
@@ -29,7 +29,7 @@ namespace Global
         }
         public static void SetCwd(string path)
         {
-            Log($"Sys.SetCwd(): {path}");
+            System.Console.Error.WriteLine($"Sys.SetCwd(): {path}");
             Directory.SetCurrentDirectory(path);
         }
         public static string GetFullPath(string path)
@@ -71,7 +71,7 @@ namespace Global
             {
                 cmd += String.Format(" \"{0}\"", args[i]);
             }
-            Echo(cmd, "RunCommand");
+            System.Console.Error.WriteLine($"RunCommand: {cmd}");
             return _wsystem(cmd);
         }
         public static string GetProcessStdout(Encoding encoding, string exe, params string[] args)
@@ -125,7 +125,7 @@ namespace Global
         {
             if (args.Length == n) return true;
             string msg = String.Format("{0} requires {1} argument(s); but {2} argument(s) specified", programName, n, args.Length);
-            Log(args, msg);
+            //Log(args, msg);
             return false;
         }
         public static List<string> TextToLines(string text)
@@ -481,19 +481,19 @@ namespace Global
         public static Assembly? LoadFromResource(Assembly assembly, string name)
         {
             byte[]? bytes = ResourceAsBytes(assembly, name);
-            //return StreamAsBytes(stream);
+            if (bytes == null)   return null;
             return Assembly.Load(bytes);
         }
-        public static EasyObject? StreamAsJson(Stream stream)
-        {
-            string? json = StreamAsText(stream);
-            return EasyObject.FromJson(json);
-        }
-        public static EasyObject ResourceAsEasyObject(Assembly assembly, string name)
-        {
-            string? json = ResourceAsText(assembly, name);
-            return EasyObject.FromJson(json)!;
-        }
+        //public static EasyObject? StreamAsJson(Stream stream)
+        //{
+        //    string? json = StreamAsText(stream);
+        //    return EasyObject.FromJson(json);
+        //}
+        //public static EasyObject ResourceAsEasyObject(Assembly assembly, string name)
+        //{
+        //    string? json = ResourceAsText(assembly, name);
+        //    return EasyObject.FromJson(json)!;
+        //}
         public static byte[]? ToUtf8Bytes(string s)
         {
             if (s is null) return null;
