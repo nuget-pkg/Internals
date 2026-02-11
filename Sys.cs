@@ -484,16 +484,12 @@ namespace Global
             if (bytes == null)   return null;
             return Assembly.Load(bytes);
         }
-        //public static EasyObject? StreamAsJson(Stream stream)
-        //{
-        //    string? json = StreamAsText(stream);
-        //    return EasyObject.FromJson(json);
-        //}
-        //public static EasyObject ResourceAsEasyObject(Assembly assembly, string name)
-        //{
-        //    string? json = ResourceAsText(assembly, name);
-        //    return EasyObject.FromJson(json)!;
-        //}
+        public static dynamic CreateInstanceFromResource(Assembly thisAssemby, string resName, string className)
+        {
+            var assembly = LoadFromResource(thisAssemby, resName);
+            Type classType = assembly!.GetType(className)!;
+            return Activator.CreateInstance(classType!)!;
+        }
         public static byte[]? ToUtf8Bytes(string s)
         {
             if (s is null) return null;
