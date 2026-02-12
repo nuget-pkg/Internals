@@ -1,23 +1,34 @@
+//#if USE_CSCS_UTIL
 namespace Global
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text.RegularExpressions;
-    using Global;
+    //using Global;
     using static Global.EasyObject;
 #if GLOBAL_SYS
     public
- #else
+#else
     internal
 #endif
     class CscsUtil
     {
+        public readonly string projDir;
+        public readonly string? home;
         public List<string> SrcList = new List<string> { };
         public List<string> PkgList = new List<string> { };
         public List<string> AsmList = new List<string> { };
         public List<string> ResList = new List<string> { };
         public List<string> DllList = new List<string> { };
+        public CscsUtil(string projFileName)
+        {
+            Log(projFileName, "projFileName");
+            projDir = Path.GetDirectoryName(Path.GetFullPath(projFileName))!;
+            Log(projDir, "projDir");
+            home = FindHome(new DirectoryInfo(projDir));
+            Log(home, "home");
+        }
         public void DebugDump()
         {
             Log(SrcList, "SrcList");
@@ -26,9 +37,25 @@ namespace Global
             Log(ResList, "ResList");
             Log(DllList, "DllList");
         }
+        public static string? FindHome(DirectoryInfo dir)
+        {
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                if (file.Name == ".bashrc" || file.Name == ".profile")
+                {
+                    return dir.FullName;
+                }
+            }
+            DirectoryInfo parent = dir.Parent;
+            if (parent == null)
+            {
+                return null;
+            }
+            return FindHome(parent);
+        }
         private string AdjustPath(string path)
         {
-            string? home = Environment.GetEnvironmentVariable("HOME");
             if (home != null)
             {
                 path = path.Replace(home + @"\", @"$(HOME)\");
@@ -58,7 +85,6 @@ namespace Global
         }
         private void ParseProjectHelper(string projFileName)
         {
-            string? home = Environment.GetEnvironmentVariable("HOME");
             if (home != null)
             {
                 projFileName = projFileName.Replace("$(HOME)", home);
@@ -117,7 +143,6 @@ namespace Global
         }
         private void SearchinDirectory(string dirName)
         {
-            string? home = Environment.GetEnvironmentVariable("HOME");
             if (home != null)
             {
                 dirName = dirName.Replace("$(HOME)", home);
@@ -161,6 +186,21 @@ namespace Global
                     if (m.Success)
                     {
                         string asmName = m.Groups[1].Value;
+#if false
+                        if (!AsmList.Contains(asmName))
+                        {
+                            AsmList.Add(asmName);
+                        }
+                        if (home != null)
+                        {
+                            resName = resName.Replace("$(HOME)", home);
+                        }
+#endif
+                        if (!asmName.StartsWith("$"))
+                        {
+                            asmName = Path.GetFullPath(asmName);
+                        }
+                        asmName = AdjustPath(asmName);
                         if (!AsmList.Contains(asmName))
                         {
                             AsmList.Add(asmName);
@@ -175,7 +215,6 @@ namespace Global
                     if (m.Success)
                     {
                         string resName = m.Groups[1].Value;
-                        string? home = Environment.GetEnvironmentVariable("HOME");
                         if (home != null)
                         {
                             resName = resName.Replace("$(HOME)", home);
@@ -211,3 +250,4 @@ namespace Global
         }
     }
 }
+//#endif
