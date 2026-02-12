@@ -12,6 +12,7 @@ namespace Global
     using System.Runtime.InteropServices;
     using System.Security.Cryptography;
     using System.Text;
+    using System.Text.RegularExpressions;
     using System.Threading;
     using static Global.EasyObject;
 
@@ -519,6 +520,21 @@ namespace Global
                     }
                 }
             }
+        }
+        public static Match? FindFirstMatch(string s, params string[] patterns)
+        {
+            foreach (var pattern in patterns)
+            {
+                Regex? r = null;
+                Match? m = null;
+                r = new Regex(pattern);
+                m = r.Match(s);
+                if (m.Success)
+                {
+                    return m;
+                }
+            }
+            return null;
         }
         [DllImport("msvcrt", CharSet = CharSet.Unicode)]
         internal static extern int _wsystem(string lpCommandLine);
