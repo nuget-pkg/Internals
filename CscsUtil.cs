@@ -103,13 +103,15 @@ namespace Global
             string[] lines = Sys.TextToLines(source).ToArray();
             for (int i = 0; i < lines.Length; i++)
             {
-                string? pat = null;
-                Regex? r = null;
                 Match? m = null;
-                pat = @"^//css_inc[ ]+([^ ;]+)[ ]*;?[ ]*";
-                r = new Regex(pat);
-                m = r.Match(lines[i]);
-                if (m.Success)
+                //string? pat = null;
+                //Regex? r = null;
+                //Match? m = null;
+                //pat = @"^//css_inc[ ]+([^ ;]+)[ ]*;?[ ]*";
+                //r = new Regex(pat);
+                //m = r.Match(lines[i]);
+                m = Sys.FindFirstMatch(lines[i], @"^//css_inc[ ]+([^ ;]+)[ ]*;?[ ]*");
+                if (m != null)
                 {
                     string srcName = m.Groups[1].Value;
                     if (home != null)
@@ -119,10 +121,8 @@ namespace Global
                     //if (!srcName.StartsWith("$")) srcName = Path.GetFullPath(srcName);
                     ParseProjectHelper(srcName);
                 }
-                pat = @"^//css_dir[ ]+([^ ;]+)[ ]*;?[ ]*";
-                r = new Regex(pat);
-                m = r.Match(lines[i]);
-                if (m.Success)
+                m = Sys.FindFirstMatch(lines[i], @"^//css_dir[ ]+([^ ;]+)[ ]*;?[ ]*");
+                if (m != null)
                 {
                     string dirName = m.Groups[1].Value;
                     if (home != null)
