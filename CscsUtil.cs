@@ -94,7 +94,6 @@ namespace Global
             if (projFileName.Contains("+")) return;
             if (!SrcList.Contains(projFileName) && !projFileName.Contains(@"\obj\"))
             {
-                //SrcList.Add(AdjustPath(projFileName));
                 SrcList.Add(projFileName);
             }
             string projDir = Path.GetDirectoryName(projFileName)!;
@@ -104,12 +103,6 @@ namespace Global
             for (int i = 0; i < lines.Length; i++)
             {
                 Match? m = null;
-                //string? pat = null;
-                //Regex? r = null;
-                //Match? m = null;
-                //pat = @"^//css_inc[ ]+([^ ;]+)[ ]*;?[ ]*";
-                //r = new Regex(pat);
-                //m = r.Match(lines[i]);
                 m = Sys.FindFirstMatch(lines[i], @"^//css_inc[ ]+([^ ;]+)[ ]*;?[ ]*");
                 if (m != null)
                 {
@@ -118,7 +111,6 @@ namespace Global
                     {
                         srcName = srcName.Replace("$(HOME)", home);
                     }
-                    //if (!srcName.StartsWith("$")) srcName = Path.GetFullPath(srcName);
                     ParseProjectHelper(srcName);
                 }
                 m = Sys.FindFirstMatch(lines[i], @"^//css_dir[ ]+([^ ;]+)[ ]*;?[ ]*");
@@ -129,8 +121,6 @@ namespace Global
                     {
                         dirName = dirName.Replace("$(HOME)", home);
                     }
-                    //if (!dirName.StartsWith("$")) dirName = Path.GetFullPath(dirName);
-                    //ParseProjectHelper(dirName);
                     SearchinDirectory(dirName);
                 }
                  Directory.SetCurrentDirectory(projDir);
@@ -161,10 +151,8 @@ namespace Global
             for (int i = 0; i < lines.Length; i++)
             {
                 {
-                    string pat = @"^//css_nuget[ ]+([^ ;]+)[ ]*;?[ ]*";
-                    Regex r = new Regex(pat);
-                    Match m = r.Match(lines[i]);
-                    if (m.Success)
+                    var m = Sys.FindFirstMatch(lines[i], @"^//css_nuget[ ]+([^ ;]+)[ ]*;?[ ]*");
+                    if (m != null)
                     {
                         string pkgName = m.Groups[1].Value;
                         if (!PkgList.Contains(pkgName))
@@ -172,13 +160,10 @@ namespace Global
                             PkgList.Add(pkgName);
                         }
                     }
-
                 }
                 {
-                    string pat = @"^//css_ref[ ]+([^ ;]+)[ ]*;?[ ]*";
-                    Regex r = new Regex(pat);
-                    Match m = r.Match(lines[i]);
-                    if (m.Success)
+                    var m = Sys.FindFirstMatch(lines[i], @"^//css_ref[ ]+([^ ;]+)[ ]*;?[ ]*");
+                    if (m != null)
                     {
                         string asmName = m.Groups[1].Value;
                         if (!asmName.StartsWith("$"))
@@ -191,13 +176,10 @@ namespace Global
                             AsmList.Add(asmName);
                         }
                     }
-
                 }
                 {
-                    string pat = @"^//css_embed[ ]+([^ ;]+)[ ]*;?[ ]*";
-                    Regex r = new Regex(pat);
-                    Match m = r.Match(lines[i]);
-                    if (m.Success)
+                    var m = Sys.FindFirstMatch(lines[i], @"^//css_embed[ ]+([^ ;]+)[ ]*;?[ ]*");
+                    if (m != null)
                     {
                         string resName = m.Groups[1].Value;
                         if (home != null)
@@ -214,13 +196,10 @@ namespace Global
                             ResList.Add(resName);
                         }
                     }
-
                 }
                 {
-                    string pat = @"^//css_native[ ]+([^ ;]+)[ ]*;?[ ]*";
-                    Regex r = new Regex(pat);
-                    Match m = r.Match(lines[i]);
-                    if (m.Success)
+                    var m = Sys.FindFirstMatch(lines[i], @"^//css_native[ ]+([^ ;]+)[ ]*;?[ ]*");
+                    if (m != null)
                     {
                         string dllName = m.Groups[1].Value;
                         dllName = Path.GetFullPath(dllName);
@@ -231,10 +210,8 @@ namespace Global
                     }
                 }
                 {
-                    string pat = @"^//css_def[ ]+([^ ;]+)[ ]*;?[ ]*";
-                    Regex r = new Regex(pat);
-                    Match m = r.Match(lines[i]);
-                    if (m.Success)
+                    var m = Sys.FindFirstMatch(lines[i], @"^//css_def[ ]+([^ ;]+)[ ]*;?[ ]*");
+                    if (m != null)
                     {
                         string defName = m.Groups[1].Value;
                         if (!PkgList.Contains(defName))
@@ -244,7 +221,6 @@ namespace Global
                     }
 
                 }
-                //Directory.SetCurrentDirectory(cwd);
             }
         }
     }
