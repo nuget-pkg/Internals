@@ -1,3 +1,4 @@
+//
 namespace Global
 {
     using System;
@@ -14,7 +15,7 @@ namespace Global
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
-    using static Global.EasyObject;
+    //using static Global.EasyObject;
 
 #if GLOBAL_SYS
     public
@@ -29,7 +30,7 @@ namespace Global
         }
         public static void SetCwd(string path)
         {
-            Log($"Sys.SetCwd(): {path}");
+            System.Console.Error.WriteLine($"Sys.SetCwd(): {path}");
             Directory.SetCurrentDirectory(path);
         }
         public static string GetFullPath(string path)
@@ -71,7 +72,7 @@ namespace Global
             {
                 cmd += String.Format(" \"{0}\"", args[i]);
             }
-            Echo(cmd, "RunCommand");
+            System.Console.Error.WriteLine($"RunCommand: {cmd}");
             return _wsystem(cmd);
         }
         public static string GetProcessStdout(Encoding encoding, string exe, params string[] args)
@@ -125,7 +126,7 @@ namespace Global
         {
             if (args.Length == n) return true;
             string msg = String.Format("{0} requires {1} argument(s); but {2} argument(s) specified", programName, n, args.Length);
-            Log(args, msg);
+            //Log(args, msg);
             return false;
         }
         public static List<string> TextToLines(string text)
@@ -436,30 +437,40 @@ namespace Global
             string fullName = ((object)x).GetType().FullName!;
             return fullName.Split('`')[0];
         }
-        //public static string ToJson(object x, bool indent = false, bool display = false)
         public static string[] ResourceNames(Assembly assembly)
         {
             return assembly.GetManifestResourceNames();
         }
-        public static Stream? ResourceAsStream(Assembly assembly, string name)
+        public static Stream? ResourceAsStream(Assembly assembly, string resName)
         {
-            string resourceName = name.Contains(":") ? name.Replace(":", ".") : $"{AssemblyName(assembly)}.{name}";
+            string resourceName = resName.Contains(":") ? resName.Replace(":", ".") : $"{AssemblyName(assembly)}.{resName}";
             Stream? stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+            {
+                Console.Error.WriteLine($"Resoucde '{resourceName}' not found!");
+                Console.Error.WriteLine($"Available resouce names are: ");
+                var names = ResourceNames(assembly);
+                foreach(var name in names)
+                {
+                    Console.Error.WriteLine($"  {name}");
+                }
+                Environment.Exit(1);
+            }
             return stream;
         }
         public static string? StreamAsText(Stream? stream)
         {
-            if (stream is null) return null; // "";
+            if (stream is null) return null;
             long pos = stream.Position;
             var streamReader = new StreamReader(stream);
             var text = streamReader.ReadToEnd();
+            text = text.Replace("\r\n", "\n");
             stream.Position = pos;
             return text;
         }
-        public static string? ResourceAsText(Assembly assembly, string name)
+        public static string? ResourceAsText(Assembly assembly, string resName)
         {
-            string resourceName = name.Contains(":") ? name.Replace(":", ".") : $"{AssemblyName(assembly)}.{name}";
-            Stream? stream = assembly.GetManifestResourceStream(resourceName);
+            Stream? stream = ResourceAsStream(assembly, resName);
             return StreamAsText(stream);
         }
         public static byte[]? StreamAsBytes(Stream? stream)
@@ -471,21 +482,32 @@ namespace Global
             stream.Position = pos;
             return bytes;
         }
-        public static byte[]? ResourceAsBytes(Assembly assembly, string name)
+        public static byte[]? ResourceAsBytes(Assembly assembly, string resName)
         {
-            string resourceName = name.Contains(":") ? name.Replace(":", ".") : $"{AssemblyName(assembly)}.{name}";
-            Stream? stream = assembly.GetManifestResourceStream(resourceName);
+            Stream? stream = ResourceAsStream(assembly, resName);
             return StreamAsBytes(stream);
         }
-        public static EasyObject? StreamAsJson(Stream stream)
+        public static Assembly? LoadFromResource(Assembly assembly, string name)
         {
-            string? json = StreamAsText(stream);
-            return EasyObject.FromJson(json);
+            byte[]? bytes = ResourceAsBytes(assembly, name);
+            if (bytes == null) return null;
+            return Assembly.Load(bytes);
         }
-        public static EasyObject ResourceAsEasyObject(Assembly assembly, string name)
+        public static dynamic CreateInstanceFromResource(Assembly thisAssemby, string resName, string className)
         {
-            string? json = ResourceAsText(assembly, name);
-            return EasyObject.FromJson(json)!;
+            var assembly = LoadFromResource(thisAssemby, resName);
+            if (assembly == null)
+            {
+                Console.Error.WriteLine($"Failed to load assembly from resouce '{resName}'");
+                Environment.Exit(1);
+            }
+            Type? classType = assembly!.GetType(className);
+            if (classType == null)
+            {
+                Console.Error.WriteLine($"Failed to find class '{className}' from resouce '{resName}'");
+                Environment.Exit(1);
+            }
+            return Activator.CreateInstance(classType!)!;
         }
         public static byte[]? ToUtf8Bytes(string s)
         {
@@ -523,12 +545,10 @@ namespace Global
         }
         public static Match? FindFirstMatch(string s, params string[] patterns)
         {
-            foreach (var pattern in patterns)
+            foreach(var pattern in patterns)
             {
-                Regex? r = null;
-                Match? m = null;
-                r = new Regex(pattern);
-                m = r.Match(s);
+                var r = new Regex(pattern);
+                var m = r.Match(s);
                 if (m.Success)
                 {
                     return m;

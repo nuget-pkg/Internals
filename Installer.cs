@@ -67,7 +67,7 @@ namespace Global
         {
             if (File.Exists(filePath)) return;
             string guid = Sys.GuidString();
-            EasyObject.Log($"Donloading to {filePath}...");
+            System.Console.Error.WriteLine($"Donloading to {filePath}...");
             Sys.DownloadBinaryFromUrl(url, $"{filePath}.{guid}");
             try
             {
@@ -101,7 +101,7 @@ namespace Global
         public static void SafeZipExtract(string zipPath, string dirPath)
         {
             if (Directory.Exists(dirPath)) return;
-            EasyObject.Log($"Extracting to {dirPath}...");
+            System.Console.Error.WriteLine($"Extracting to {dirPath}...");
             string guid = Sys.GuidString();
             ZipFile.ExtractToDirectory(zipPath, $"{dirPath}.{guid}");
             try

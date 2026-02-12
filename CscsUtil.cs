@@ -1,4 +1,4 @@
-//#if USE_CSCS_UTIL
+#if USE_CSCS_UTIL
 namespace Global
 {
     using System;
@@ -21,6 +21,7 @@ namespace Global
         public List<string> AsmList = new List<string> { };
         public List<string> ResList = new List<string> { };
         public List<string> DllList = new List<string> { };
+        public List<string> DefList = new List<string> { };
         public CscsUtil(string projFileName)
         {
             Log(projFileName, "projFileName");
@@ -36,6 +37,7 @@ namespace Global
             Log(AsmList, "AsmList");
             Log(ResList, "ResList");
             Log(DllList, "DllList");
+            Log(DefList, "DefList");
         }
         public static string? FindHome(DirectoryInfo dir)
         {
@@ -65,13 +67,6 @@ namespace Global
         public void ParseProject(string projFileName)
         {
             Log(projFileName, "CscsUtil.ParseProject()");
-#if false
-            SrcList.Clear();
-            PkgList.Clear();
-            AsmList.Clear();
-            ResList.Clear();
-            DllList.Clear();
-#endif
             string cwd = Directory.GetCurrentDirectory();
             projFileName = Path.GetFullPath(projFileName);
             ParseProjectHelper(projFileName);
@@ -108,13 +103,15 @@ namespace Global
             string[] lines = Sys.TextToLines(source).ToArray();
             for (int i = 0; i < lines.Length; i++)
             {
-                string? pat = null;
-                Regex? r = null;
                 Match? m = null;
-                pat = @"^//css_inc[ ]+([^ ;]+)[ ]*;?[ ]*";
-                r = new Regex(pat);
-                m = r.Match(lines[i]);
-                if (m.Success)
+                //string? pat = null;
+                //Regex? r = null;
+                //Match? m = null;
+                //pat = @"^//css_inc[ ]+([^ ;]+)[ ]*;?[ ]*";
+                //r = new Regex(pat);
+                //m = r.Match(lines[i]);
+                m = Sys.FindFirstMatch(lines[i], @"^//css_inc[ ]+([^ ;]+)[ ]*;?[ ]*");
+                if (m != null)
                 {
                     string srcName = m.Groups[1].Value;
                     if (home != null)
@@ -124,10 +121,8 @@ namespace Global
                     //if (!srcName.StartsWith("$")) srcName = Path.GetFullPath(srcName);
                     ParseProjectHelper(srcName);
                 }
-                pat = @"^//css_dir[ ]+([^ ;]+)[ ]*;?[ ]*";
-                r = new Regex(pat);
-                m = r.Match(lines[i]);
-                if (m.Success)
+                m = Sys.FindFirstMatch(lines[i], @"^//css_dir[ ]+([^ ;]+)[ ]*;?[ ]*");
+                if (m != null)
                 {
                     string dirName = m.Groups[1].Value;
                     if (home != null)
@@ -186,16 +181,6 @@ namespace Global
                     if (m.Success)
                     {
                         string asmName = m.Groups[1].Value;
-#if false
-                        if (!AsmList.Contains(asmName))
-                        {
-                            AsmList.Add(asmName);
-                        }
-                        if (home != null)
-                        {
-                            resName = resName.Replace("$(HOME)", home);
-                        }
-#endif
                         if (!asmName.StartsWith("$"))
                         {
                             asmName = Path.GetFullPath(asmName);
@@ -245,9 +230,23 @@ namespace Global
                         }
                     }
                 }
+                {
+                    string pat = @"^//css_def[ ]+([^ ;]+)[ ]*;?[ ]*";
+                    Regex r = new Regex(pat);
+                    Match m = r.Match(lines[i]);
+                    if (m.Success)
+                    {
+                        string defName = m.Groups[1].Value;
+                        if (!PkgList.Contains(defName))
+                        {
+                            DefList.Add(defName);
+                        }
+                    }
+
+                }
                 //Directory.SetCurrentDirectory(cwd);
             }
         }
     }
 }
-//#endif
+#endif

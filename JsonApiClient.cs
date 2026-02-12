@@ -1,3 +1,4 @@
+#if USE_JSON_API
 namespace Global
 {
     using System;
@@ -96,3 +97,4 @@ namespace Global
         }
     }
 }
+#endif
