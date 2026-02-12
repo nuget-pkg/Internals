@@ -47,7 +47,7 @@ namespace Global
                     return dir.FullName;
                 }
             }
-            DirectoryInfo parent = dir.Parent;
+            DirectoryInfo? parent = dir.Parent;
             if (parent == null)
             {
                 return null;
