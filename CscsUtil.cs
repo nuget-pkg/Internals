@@ -103,7 +103,10 @@ namespace Global
             for (int i = 0; i < lines.Length; i++)
             {
                 Match? m = null;
-                m = Sys.FindFirstMatch(lines[i], @"^//css_inc[ ]+([^ ;]+)[ ]*;?[ ]*");
+                m = Sys.FindFirstMatch(lines[i],
+                    @"^//css_inc[ ]+([^ ;]+)[ ]*;?[ ]*",
+                    @"^//[+]#inc[ ]+([^ ;]+)[ ]*;?[ ]*"
+                    );
                 if (m != null)
                 {
                     string srcName = m.Groups[1].Value;
@@ -113,7 +116,10 @@ namespace Global
                     }
                     ParseProjectHelper(srcName);
                 }
-                m = Sys.FindFirstMatch(lines[i], @"^//css_dir[ ]+([^ ;]+)[ ]*;?[ ]*");
+                m = Sys.FindFirstMatch(lines[i],
+                    @"^//css_dir[ ]+([^ ;]+)[ ]*;?[ ]*",
+                    @"^//[+]#dir[ ]+([^ ;]+)[ ]*;?[ ]*"
+                    );
                 if (m != null)
                 {
                     string dirName = m.Groups[1].Value;
@@ -151,7 +157,10 @@ namespace Global
             for (int i = 0; i < lines.Length; i++)
             {
                 {
-                    var m = Sys.FindFirstMatch(lines[i], @"^//css_nuget[ ]+([^ ;]+)[ ]*;?[ ]*");
+                    var m = Sys.FindFirstMatch(lines[i],
+                        @"^//css_nuget[ ]+([^ ;]+)[ ]*;?[ ]*",
+                        @"^//[+]#nuget[ ]+([^ ;]+)[ ]*;?[ ]*"
+                        );
                     if (m != null)
                     {
                         string pkgName = m.Groups[1].Value;
@@ -162,7 +171,10 @@ namespace Global
                     }
                 }
                 {
-                    var m = Sys.FindFirstMatch(lines[i], @"^//css_ref[ ]+([^ ;]+)[ ]*;?[ ]*");
+                    var m = Sys.FindFirstMatch(lines[i],
+                        @"^//css_ref[ ]+([^ ;]+)[ ]*;?[ ]*",
+                        @"^//[+]#ref[ ]+([^ ;]+)[ ]*;?[ ]*"
+                        );
                     if (m != null)
                     {
                         string asmName = m.Groups[1].Value;
@@ -178,7 +190,10 @@ namespace Global
                     }
                 }
                 {
-                    var m = Sys.FindFirstMatch(lines[i], @"^//css_embed[ ]+([^ ;]+)[ ]*;?[ ]*");
+                    var m = Sys.FindFirstMatch(lines[i],
+                        @"^//css_embed[ ]+([^ ;]+)[ ]*;?[ ]*",
+                        @"^//[+]#embed[ ]+([^ ;]+)[ ]*;?[ ]*"
+                        );
                     if (m != null)
                     {
                         string resName = m.Groups[1].Value;
@@ -198,7 +213,10 @@ namespace Global
                     }
                 }
                 {
-                    var m = Sys.FindFirstMatch(lines[i], @"^//css_native[ ]+([^ ;]+)[ ]*;?[ ]*");
+                    var m = Sys.FindFirstMatch(lines[i],
+                        @"^//css_native[ ]+([^ ;]+)[ ]*;?[ ]*",
+                        @"^//[+]#native[ ]+([^ ;]+)[ ]*;?[ ]*"
+                        );
                     if (m != null)
                     {
                         string dllName = m.Groups[1].Value;
@@ -210,11 +228,14 @@ namespace Global
                     }
                 }
                 {
-                    var m = Sys.FindFirstMatch(lines[i], @"^//css_def[ ]+([^ ;]+)[ ]*;?[ ]*");
+                    var m = Sys.FindFirstMatch(lines[i],
+                        @"^//css_def[ ]+([^ ;]+)[ ]*;?[ ]*",
+                        @"^//[+]#def[ ]+([^ ;]+)[ ]*;?[ ]*"
+                        );
                     if (m != null)
                     {
                         string defName = m.Groups[1].Value;
-                        if (!PkgList.Contains(defName))
+                        if (!DefList.Contains(defName))
                         {
                             DefList.Add(defName);
                         }
