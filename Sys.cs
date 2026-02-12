@@ -487,7 +487,17 @@ namespace Global
         public static dynamic CreateInstanceFromResource(Assembly thisAssemby, string resName, string className)
         {
             var assembly = LoadFromResource(thisAssemby, resName);
-            Type classType = assembly!.GetType(className)!;
+            if (assembly == null)
+            {
+                Console.Error.WriteLine($"Failed to load assembly from resouce '{resName}'");
+                Environment.Exit(1);
+            }
+            Type classType = assembly!.GetType(className);
+            if (classType == null)
+            {
+                Console.Error.WriteLine($"Failed to find class '{className}' from resouce '{resName}'");
+                Environment.Exit(1);
+            }
             return Activator.CreateInstance(classType!)!;
         }
         public static byte[]? ToUtf8Bytes(string s)
