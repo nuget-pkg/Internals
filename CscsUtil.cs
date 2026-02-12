@@ -1,4 +1,4 @@
-//#if USE_CSCS_UTIL
+#if USE_CSCS_UTIL
 namespace Global
 {
     using System;
@@ -47,7 +47,7 @@ namespace Global
                     return dir.FullName;
                 }
             }
-            DirectoryInfo parent = dir.Parent;
+            DirectoryInfo? parent = dir.Parent;
             if (parent == null)
             {
                 return null;
@@ -250,4 +250,4 @@ namespace Global
         }
     }
 }
-//#endif
+#endif

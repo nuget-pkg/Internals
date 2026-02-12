@@ -436,15 +436,25 @@ namespace Global
             string fullName = ((object)x).GetType().FullName!;
             return fullName.Split('`')[0];
         }
-        //public static string ToJson(object x, bool indent = false, bool display = false)
         public static string[] ResourceNames(Assembly assembly)
         {
             return assembly.GetManifestResourceNames();
         }
-        public static Stream? ResourceAsStream(Assembly assembly, string name)
+        public static Stream? ResourceAsStream(Assembly assembly, string resName)
         {
-            string resourceName = name.Contains(":") ? name.Replace(":", ".") : $"{AssemblyName(assembly)}.{name}";
+            string resourceName = resName.Contains(":") ? resName.Replace(":", ".") : $"{AssemblyName(assembly)}.{resName}";
             Stream? stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+            {
+                Console.Error.WriteLine($"Resoucde '{resourceName}' not found!");
+                Console.Error.WriteLine($"Available resouce names are: ");
+                var names = ResourceNames(assembly);
+                foreach(var name in names)
+                {
+                    Console.Error.WriteLine($"  {name}");
+                }
+                Environment.Exit(1);
+            }
             return stream;
         }
         public static string? StreamAsText(Stream? stream)
@@ -457,10 +467,9 @@ namespace Global
             stream.Position = pos;
             return text;
         }
-        public static string? ResourceAsText(Assembly assembly, string name)
+        public static string? ResourceAsText(Assembly assembly, string resName)
         {
-            string resourceName = name.Contains(":") ? name.Replace(":", ".") : $"{AssemblyName(assembly)}.{name}";
-            Stream? stream = assembly.GetManifestResourceStream(resourceName);
+            Stream? stream = ResourceAsStream(assembly, resName);
             return StreamAsText(stream);
         }
         public static byte[]? StreamAsBytes(Stream? stream)
@@ -472,16 +481,15 @@ namespace Global
             stream.Position = pos;
             return bytes;
         }
-        public static byte[]? ResourceAsBytes(Assembly assembly, string name)
+        public static byte[]? ResourceAsBytes(Assembly assembly, string resName)
         {
-            string resourceName = name.Contains(":") ? name.Replace(":", ".") : $"{AssemblyName(assembly)}.{name}";
-            Stream? stream = assembly.GetManifestResourceStream(resourceName);
+            Stream? stream = ResourceAsStream(assembly, resName);
             return StreamAsBytes(stream);
         }
         public static Assembly? LoadFromResource(Assembly assembly, string name)
         {
             byte[]? bytes = ResourceAsBytes(assembly, name);
-            if (bytes == null)   return null;
+            if (bytes == null) return null;
             return Assembly.Load(bytes);
         }
         public static dynamic CreateInstanceFromResource(Assembly thisAssemby, string resName, string className)
@@ -492,7 +500,7 @@ namespace Global
                 Console.Error.WriteLine($"Failed to load assembly from resouce '{resName}'");
                 Environment.Exit(1);
             }
-            Type classType = assembly!.GetType(className);
+            Type? classType = assembly!.GetType(className);
             if (classType == null)
             {
                 Console.Error.WriteLine($"Failed to find class '{className}' from resouce '{resName}'");
