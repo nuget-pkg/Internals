@@ -3,6 +3,7 @@ namespace Global
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Specialized;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -15,6 +16,8 @@ namespace Global
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
+    using System.Web;
+
     //using static Global.EasyObject;
 
 #if GLOBAL_SYS
@@ -559,6 +562,24 @@ namespace Global
                     return groups;
                 }
             }
+            return null;
+        }
+        public static Dictionary<string, string> QueryParameterDictionary(string url)
+        {
+            Uri uri = new Uri(url);
+            string queryString = uri.Query;
+            NameValueCollection queryParameters = HttpUtility.ParseQueryString(queryString);
+            var dict = new Dictionary<string, string>();
+            foreach (string? key in queryParameters.AllKeys)
+            {
+                dict[key!] = queryParameters[key!]!;
+            }
+            return dict;
+        }
+        public static string? FindQueryParameter(string url, string name)
+        {
+            var dict = QueryParameterDictionary(url);
+            if (dict.ContainsKey(name)) return dict[name];
             return null;
         }
         [DllImport("msvcrt", CharSet = CharSet.Unicode)]
