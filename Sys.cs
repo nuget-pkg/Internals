@@ -543,7 +543,7 @@ namespace Global
                 }
             }
         }
-        public static Match? FindFirstMatch(string s, params string[] patterns)
+        public static List<string>? FindFirstMatch(string s, params string[] patterns)
         {
             foreach(var pattern in patterns)
             {
@@ -551,7 +551,12 @@ namespace Global
                 var m = r.Match(s);
                 if (m.Success)
                 {
-                    return m;
+                    var groups = new List<string>();
+                    for (int i = 0; i < m.Groups.Count; i++)
+                    {
+                        groups.Add(m.Groups[i].Value);
+                    }
+                    return groups;
                 }
             }
             return null;
