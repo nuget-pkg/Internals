@@ -14,8 +14,10 @@ namespace Global
 #endif
     class CscsUtil
     {
+        private bool generateDllProject = false;
         public readonly string projDir;
         public readonly string? home;
+        public string? OutType;
         public List<string> SrcList = new List<string> { };
         public List<string> PkgList = new List<string> { };
         public List<string> AsmList = new List<string> { };
@@ -32,6 +34,7 @@ namespace Global
         }
         public void DebugDump()
         {
+            Log(OutType, "OutType");
             Log(SrcList, "SrcList");
             Log(PkgList, "PkgList");
             Log(AsmList, "AsmList");
@@ -64,8 +67,10 @@ namespace Global
             }
             return path;
         }
-        public void ParseProject(string projFileName)
+        public void ParseProject(string projFileName, bool generateDllProject)
         {
+            this.generateDllProject = generateDllProject;
+            this.OutType = this.generateDllProject ? "Library" : "Exe";
             Log(projFileName, "CscsUtil.ParseProject()");
             string cwd = Directory.GetCurrentDirectory();
             projFileName = Path.GetFullPath(projFileName);
@@ -103,6 +108,16 @@ namespace Global
             for (int i = 0; i < lines.Length; i++)
             {
                 Match? m = null;
+                m = Sys.FindFirstMatch(lines[i],
+                    @"^//[+]#gui[ ]*;?[ ]*"
+                    );
+                if (m != null)
+                {
+                    if (!this.generateDllProject)
+                    {
+                        this.OutType = "WinExe";
+                    }
+                }
                 m = Sys.FindFirstMatch(lines[i],
                     @"^//css_inc[ ]+([^ ;]+)[ ]*;?[ ]*",
                     @"^//[+]#inc[ ]+([^ ;]+)[ ]*;?[ ]*"
