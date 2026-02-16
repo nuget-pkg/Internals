@@ -107,7 +107,7 @@ namespace Global
             string[] lines = Sys.TextToLines(source).ToArray();
             for (int i = 0; i < lines.Length; i++)
             {
-                Match? m = null;
+                List<string>? m = null;
                 m = Sys.FindFirstMatch(lines[i],
                     @"^//[+]#gui[ ]*;?[ ]*"
                     );
@@ -124,7 +124,7 @@ namespace Global
                     );
                 if (m != null)
                 {
-                    string srcName = m.Groups[1].Value;
+                    string srcName = m[1];
                     if (home != null)
                     {
                         srcName = srcName.Replace("$(HOME)", home);
@@ -137,7 +137,7 @@ namespace Global
                     );
                 if (m != null)
                 {
-                    string dirName = m.Groups[1].Value;
+                    string dirName = m[1];
                     if (home != null)
                     {
                         dirName = dirName.Replace("$(HOME)", home);
@@ -178,7 +178,7 @@ namespace Global
                         );
                     if (m != null)
                     {
-                        string pkgName = m.Groups[1].Value;
+                        string pkgName = m[1];
                         if (!PkgList.Contains(pkgName))
                         {
                             PkgList.Add(pkgName);
@@ -192,7 +192,7 @@ namespace Global
                         );
                     if (m != null)
                     {
-                        string asmName = m.Groups[1].Value;
+                        string asmName = m[1];
                         if (!asmName.StartsWith("$"))
                         {
                             asmName = Path.GetFullPath(asmName);
@@ -211,7 +211,7 @@ namespace Global
                         );
                     if (m != null)
                     {
-                        string resName = m.Groups[1].Value;
+                        string resName = m[1];
                         if (home != null)
                         {
                             resName = resName.Replace("$(HOME)", home);
@@ -234,7 +234,7 @@ namespace Global
                         );
                     if (m != null)
                     {
-                        string dllName = m.Groups[1].Value;
+                        string dllName = m[1];
                         dllName = Path.GetFullPath(dllName);
                         if (!DllList.Contains(dllName))
                         {
@@ -249,7 +249,7 @@ namespace Global
                         );
                     if (m != null)
                     {
-                        string defName = m.Groups[1].Value;
+                        string defName = m[1];
                         if (!DefList.Contains(defName))
                         {
                             DefList.Add(defName);
