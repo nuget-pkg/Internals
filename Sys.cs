@@ -582,6 +582,13 @@ namespace Global
             if (dict.ContainsKey(name)) return dict[name];
             return null;
         }
+        public static void WriteTextFileUtf8(string fileName, string content)
+        {
+            using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.GetEncoding("UTF-8")))
+            {
+                sw.Write(content.Replace("\r\n", "\n"));
+            }
+        }
         [DllImport("msvcrt", CharSet = CharSet.Unicode)]
         internal static extern int _wsystem(string lpCommandLine);
         [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
