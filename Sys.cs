@@ -12,7 +12,6 @@ namespace Global
     using System.Net.Sockets;
     using System.Reflection;
     using System.Runtime.InteropServices;
-    using System.Security.Cryptography;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
@@ -22,7 +21,7 @@ namespace Global
 
 #if GLOBAL_SYS
     public
- #else
+#else
     internal
 #endif
     static partial class Sys
@@ -453,7 +452,7 @@ namespace Global
                 Console.Error.WriteLine($"Resoucde '{resourceName}' not found!");
                 Console.Error.WriteLine($"Available resouce names are: ");
                 var names = ResourceNames(assembly);
-                foreach(var name in names)
+                foreach (var name in names)
                 {
                     Console.Error.WriteLine($"  {name}");
                 }
@@ -548,7 +547,7 @@ namespace Global
         }
         public static List<string>? FindFirstMatch(string s, params string[] patterns)
         {
-            foreach(var pattern in patterns)
+            foreach (var pattern in patterns)
             {
                 var r = new Regex(pattern);
                 var m = r.Match(s);
