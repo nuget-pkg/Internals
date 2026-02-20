@@ -236,7 +236,8 @@ namespace Global
             string dir = Path.GetDirectoryName(path)!;
             if (string.IsNullOrEmpty(dir)) dir = ".";
             string fname = Path.GetFileName(path);
-            string[] files = Directory.GetFiles(dir, fname);
+            //string[] files = Directory.GetFiles(dir, fname);
+            string[] files = Directory.GetFileSystemEntries(dir, fname);
             List<string> result = new List<string>();
             for (int i = 0; i < files.Length; i++)
             {
