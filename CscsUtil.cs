@@ -166,7 +166,7 @@ namespace Global
             if (srcPath.StartsWith("$")) return;
             string source = File.ReadAllText(srcPath);
             string cwd = Directory.GetCurrentDirectory();
-            Echo(cwd, "cwd");
+            Log(cwd, "cwd");
             Directory.SetCurrentDirectory(Path.GetDirectoryName(srcPath)!);
             string[] lines = Sys.TextToLines(source).ToArray();
             for (int i = 0; i < lines.Length; i++)
