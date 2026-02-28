@@ -8,6 +8,7 @@ namespace Global
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Net.Http;
     using System.Net.NetworkInformation;
     using System.Net.Sockets;
     using System.Reflection;
@@ -15,7 +16,9 @@ namespace Global
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
+    using System.Threading.Tasks;
     using System.Web;
+    using System.Xml;
 
     //using static Global.EasyObject;
 
@@ -26,6 +29,7 @@ namespace Global
 #endif
     static partial class Sys
     {
+        public static bool SilentFlag = false;
         public static string GetCwd()
         {
             return Directory.GetCurrentDirectory();
@@ -99,27 +103,19 @@ namespace Global
             processStartInfo.Arguments = cmdArgs;
             process = new Process();
             process.StartInfo = processStartInfo;
-            // enable raising events because Process does not raise events by default
             process.EnableRaisingEvents = true;
-            // attach the event handler for OutputDataReceived before starting the process
             process.OutputDataReceived += new DataReceivedEventHandler
             (
                 delegate (object sender, DataReceivedEventArgs e)
                 {
-                    Console.Error.WriteLine(e.Data);
-                    // append the new data to the data already read-in
+                    if (!SilentFlag) Console.Error.WriteLine(e.Data);
                     outputBuilder.Append(e.Data + "\n");
                 }
             );
-            // start the process
-            // then begin asynchronously reading the output
-            // then wait for the process to exit
-            // then cancel asynchronously reading the output
             process.Start();
             process.BeginOutputReadLine();
             process.WaitForExit();
             process.CancelOutputRead();
-            // use the output
             string output = outputBuilder.ToString();
             output = output.Trim() + "\n";
             return output;
@@ -588,6 +584,88 @@ namespace Global
             {
                 sw.Write(content.Replace("\r\n", "\n"));
             }
+        }
+        public static void DumpObjectAsJson(object? x, bool compact = false, string newline = "\n")
+        {
+            string json = EasyObject.FromObject(x).ToJson(indent: !compact);
+            Console.Write(json +  newline);
+        }
+        public static bool CanConvertAllToSjis(string text)
+        {
+            // Shift_JIS (または CP932) のエンコーディングを取得
+            // "shift_jis" は純粋なJIS規格、"cp932" はWindows拡張を含むSJIS
+            Encoding sjis = Encoding.GetEncoding("shift_jis");
+
+            // 文字列をSJISのバイト配列に変換
+            byte[] encodedBytes = sjis.GetBytes(text);
+
+            // バイト配列を文字列に戻す
+            string decodedText = sjis.GetString(encodedBytes);
+
+            // 変換前と後で一致するか確認（不一致＝表せない文字がある）
+            return text == decodedText;
+        }
+        public static string RemoveStringSuffix(string input, string suffix)
+        {
+            if (input.EndsWith(suffix))
+            {
+                return input.Remove(input.Length - suffix.Length, suffix.Length);
+            }
+            return input;
+        }
+        public static void WorkAroundTlsSecurity()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+        }
+        public static async Task<string> GetResponseString(
+            string baseUrl,
+            Dictionary<string, string>? queryParameters
+            )
+        {
+            if (queryParameters == null)
+            {
+                queryParameters = new Dictionary<string, string>();
+            }
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(
+                $"{baseUrl}?{await new FormUrlEncodedContent(queryParameters).ReadAsStringAsync()}"
+                );
+            var contents = await response.Content.ReadAsStringAsync();
+            return contents;
+        }
+        public static string RemoveSurrogatePair(string s)
+        {
+            // https://teratail.com/questions/53520 絵文字の判別方法
+            s = Regex.Replace(s, @"[\uD800-\uDFFF]", "★");
+            s = s.Replace("★★", "★");
+            return s;
+        }
+        public static string AdjustFileName(string fileName)
+        {
+            fileName = RemoveSurrogatePair(fileName);
+            string result = fileName
+                .Replace("'", "’")
+                .Replace("\"", "”")
+                .Replace(":", "：")
+                .Replace("/", "／")
+                .Replace("　", " ")
+                .Replace("|", "｜")
+                .Replace("#", "＃")
+                .Replace("?", "？")
+                ;
+            return result;
+        }
+        public static string AdjustMetaData(string metadata, bool removeSurrogate)
+        {
+            metadata = metadata
+                .Replace("'", "’")
+                .Replace("\"", "”")
+                ;
+            if (removeSurrogate)
+            {
+                metadata = RemoveSurrogatePair(metadata);
+            }
+            return metadata;
         }
         [DllImport("msvcrt", CharSet = CharSet.Unicode)]
         internal static extern int _wsystem(string lpCommandLine);
