@@ -36,7 +36,7 @@ namespace Global
         }
         public static void SetCwd(string path)
         {
-            System.Console.Error.WriteLine($"Sys.SetCwd(): {path}");
+            if (!SilentFlag) System.Console.Error.WriteLine($"Sys.SetCwd(): {path}");
             Directory.SetCurrentDirectory(path);
         }
         public static string GetFullPath(string path)
@@ -78,7 +78,7 @@ namespace Global
             {
                 cmd += String.Format(" \"{0}\"", args[i]);
             }
-            System.Console.Error.WriteLine($"RunCommand: {cmd}");
+            if (!SilentFlag) System.Console.Error.WriteLine($"RunCommand: {cmd}");
             return _wsystem(cmd);
         }
         public static string GetProcessStdout(Encoding encoding, string exe, params string[] args)
