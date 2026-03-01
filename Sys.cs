@@ -18,7 +18,7 @@ namespace Global
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web;
-    using System.Xml;
+    using static Global.EasyObject;
 
     //using static Global.EasyObject;
 
@@ -648,6 +648,7 @@ namespace Global
                 .Replace("\"", "”")
                 .Replace(":", "：")
                 .Replace("/", "／")
+                .Replace("\\", "＼")
                 .Replace("　", " ")
                 .Replace("|", "｜")
                 .Replace("#", "＃")
@@ -666,6 +667,69 @@ namespace Global
                 metadata = RemoveSurrogatePair(metadata);
             }
             return metadata;
+        }
+        public static string HomeFile(params string[] relatives)
+        {
+            string? home = Environment.GetEnvironmentVariable("HOME");
+            if (home == null)
+            {
+                Crash("Global.Sys.HomeFile(): $HOME not set");
+            }
+            string result = home!;
+            foreach (var x in relatives)
+            {
+                string relative = x;
+                relative = AdjustFileName(relative);
+                result = Path.Combine(result, relative);
+            }
+            result = result.Replace("\\", "/");
+            PrepareForFile(result);
+            return result;
+        }
+        public static string HomeFolder(params string[] relatives)
+        {
+            string? home = Environment.GetEnvironmentVariable("HOME");
+            if (home == null)
+            {
+                Crash("Global.Sys.HomeFolder(): $HOME not set");
+            }
+            string result = home!;
+            foreach (var x in relatives)
+            {
+                string relative = x;
+                relative = AdjustFileName(relative);
+                result = Path.Combine(result, relative);
+            }
+            result = result.Replace("\\", "/");
+            Prepare(result);
+            return result;
+        }
+        public static void Crash(object? message = null)
+        {
+            ShowDetail = false;
+            Log("[!! PROGRAM CRASHED !!]");
+            if (message != null && !(message is Exception))
+            {
+                Log(message, "Message");
+            }
+            if (message is Exception e)
+            {
+                string trace = e.ToString();
+                var lines = TextToLines(trace);
+                var lines2 = lines.Select(x => $"      {x}").ToList();
+                string trace2 = "\n" + string.Join("\n", lines2);
+                Log(trace2, "Stack Trace");
+            }
+            else
+            {
+                string trace = Environment.StackTrace;
+                var lines = TextToLines(trace);
+                //var lines2 = lines.Select(x => x.Trim()).ToList();
+                string trace2 = "\n" + string.Join("\n", lines);
+                Log(trace2, "Stack Trace");
+            }
+            Log("[!! ABORTING...WITH EXIT CODE 1 !!]");
+            Environment.Exit(1);
         }
         [DllImport("msvcrt", CharSet = CharSet.Unicode)]
         internal static extern int _wsystem(string lpCommandLine);
