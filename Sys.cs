@@ -1,4 +1,3 @@
-//
 namespace Global
 {
     using System;
@@ -19,8 +18,6 @@ namespace Global
     using System.Threading.Tasks;
     using System.Web;
     using static Global.EasyObject;
-
-    //using static Global.EasyObject;
 
 #if GLOBAL_SYS
     public
@@ -585,9 +582,19 @@ namespace Global
                 sw.Write(content.Replace("\r\n", "\n"));
             }
         }
-        public static void DumpObjectAsJson(object? x, bool compact = false, string newline = "\n")
+        public static void DumpObjectAsJson(
+            object? x,
+            bool compact = false,
+            string newline = "\n",
+            bool keyAsSymbol = false,
+            bool removeSurrogatePair = false)
         {
-            string json = EasyObject.FromObject(x).ToJson(indent: !compact);
+            string json = EasyObject.FromObject(x)
+                .ToJson(
+                indent: !compact,
+                keyAsSymbol: keyAsSymbol,
+                removeSurrogatePair: removeSurrogatePair
+                );
             Console.Write(json +  newline);
         }
         public static bool CanConvertAllToSjis(string text)
@@ -633,12 +640,13 @@ namespace Global
             var contents = await response.Content.ReadAsStringAsync();
             return contents;
         }
-        public static string RemoveSurrogatePair(string s)
+        public static string RemoveSurrogatePair(string str)
         {
             // https://teratail.com/questions/53520 絵文字の判別方法
-            s = Regex.Replace(s, @"[\uD800-\uDFFF]", "★");
-            s = s.Replace("★★", "★");
-            return s;
+            str = Regex.Replace(str, @"[\uD800-\uDFFF]", "{ddbea68e-d93f-4e85-92b5-83b1ace6d50f}");
+            str = str.Replace("{ddbea68e-d93f-4e85-92b5-83b1ace6d50f}{ddbea68e-d93f-4e85-92b5-83b1ace6d50f}", "★");
+            str = str.Replace("{ddbea68e-d93f-4e85-92b5-83b1ace6d50f}", "★");
+            return str;
         }
         public static string AdjustFileName(string fileName)
         {
