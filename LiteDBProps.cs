@@ -7,7 +7,11 @@ namespace Global
     using System.IO;
     using System.Linq;
     //using static Global.EasyObject;
-    public class LiteDBProps : IExportToPlainObject
+    public class LiteDBProps :
+        IExportToPlainObject,
+        IImportFromPlainObject,
+        IExportToCommonJson,
+        IImportFromCommonJson
     {
         public class Prop
         {
@@ -122,16 +126,6 @@ namespace Global
                 connection.Commit();
             }
         }
-        public object? ExportToPlainObject()
-        {
-            var keys = this.Keys;
-            EasyObject eo = EasyObject.NewArray();
-            foreach (var key in keys)
-            {
-                eo[key] = this.Get(key);
-            }
-            return eo.ToObject();
-        }
         public List<string> Keys
         {
             get
@@ -157,7 +151,45 @@ namespace Global
         }
         public override string ToString()
         {
-            return EasyObject.FromObject(this).ToJson(indent: true);
+            return EasyObject.FromObject(this).ToJson(indent: true, keyAsSymbol: true);
+        }
+
+        public object? ExportToPlainObject()
+        {
+            var keys = this.Keys;
+            EasyObject eo = EasyObject.NewObject();
+            foreach (var key in keys)
+            {
+                eo[key] = this.Get(key);
+            }
+            return eo.ToObject();
+        }
+        public void ImportFromPlainObject(object? x)
+        {
+            var eo = EasyObject.FromObject(x);
+            if (!eo.IsObject)
+            {
+                Sys.Crash("LiteDBProps.ImportFromPlainObject(): argumet is not object/dictionary!");
+            }
+            this.DeleteAll();
+            var keys = eo.Keys;
+            foreach (var key in keys)
+            {
+                this.Put(key, eo[key]);
+            }
+        }
+
+        public string ExportToCommonJson()
+        {
+            var eo = EasyObject.FromObject(this.ExportToPlainObject());
+            return eo.ToJson(indent: true);
+        }
+
+        public void ImportFromCommonJson(string x)
+        {
+            var eo = EasyObject.FromJson(x);
+            var po = eo.ToObject();
+            this.ImportFromPlainObject(po);
         }
     }
 }
