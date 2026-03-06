@@ -27,6 +27,11 @@ namespace Global
     static partial class Sys
     {
         public static bool SilentFlag = false;
+        public static void SetupConsoleUTF8()
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.InputEncoding = Encoding.UTF8;
+        }
         public static string GetCwd()
         {
             return Directory.GetCurrentDirectory();
