@@ -229,12 +229,34 @@ namespace Global
             }
             return sb.ToString();
         }
+        public static string CygpathWindows(string path)
+        {
+            var m = FindFirstMatch(
+                path,
+                "^/([a-zA-z])[/]?$",
+                "^/([a-zA-z])/(.+)$",
+                "^/mnt/([a-zA-z])[/]?$",
+                "^/mnt/([a-zA-z])/(.+)$"
+                );
+            if (m != null)
+            {
+                if (m.Count == 2)
+                {
+                    return $"{m[1]}:/";
+                }
+                else if (m.Count == 3)
+                {
+                    return $"{m[1]}:/{m[2]}";
+                }
+            }
+            return path;
+        }
         public static string[] ExpandWildcard(string path)
         {
+            path = CygpathWindows(path);
             string dir = Path.GetDirectoryName(path)!;
             if (string.IsNullOrEmpty(dir)) dir = ".";
             string fname = Path.GetFileName(path);
-            //string[] files = Directory.GetFiles(dir, fname);
             string[] files = Directory.GetFileSystemEntries(dir, fname);
             List<string> result = new List<string>();
             for (int i = 0; i < files.Length; i++)
@@ -245,6 +267,11 @@ namespace Global
         }
         public static string[] ExpandWildcardList(params string[] pathList)
         {
+            pathList = (string[])pathList.Clone();
+            for (int i = 0; i < pathList.Length; i++)
+            {
+                pathList[i] = CygpathWindows(pathList[i]);
+            }
             List<string> result = new List<string>();
             for (int i = 0; i < pathList.Length; i++)
             {
