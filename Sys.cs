@@ -408,6 +408,14 @@ namespace Global
         {
             return x.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz");
         }
+        public static string DateTimeStringSafe(DateTime x)
+        {
+            // result string can be used as part of file name/path.
+            return x.ToString("yyyy-MM-ddTHH-mm-ss.fffffffzzz")
+                .Replace("T", "+")
+                .Replace(":", "")
+                ;
+        }
         public static int RunToConsole(string exePath, string[] args, Dictionary<string, string>? vars = null)
         {
             exePath = CygpathWindows(exePath);
