@@ -38,6 +38,7 @@ namespace Global
         }
         public static void SetCwd(string path)
         {
+            path = CygpathWindows(path);
             if (!SilentFlag) System.Console.Error.WriteLine($"Sys.SetCwd(): {path}");
             Directory.SetCurrentDirectory(path);
         }
