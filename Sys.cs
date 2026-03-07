@@ -44,18 +44,22 @@ namespace Global
         }
         public static string GetFullPath(string path)
         {
+            path = CygpathWindows(path);
             return Path.GetFullPath(path);
         }
         public static string GetFileName(string path)
         {
+            path = CygpathWindows(path);
             return Path.GetFileName(path);
         }
         public static string GetDirectoryName(string path)
         {
+            path = CygpathWindows(path);
             return Path.GetDirectoryName(path)!;
         }
         public static string GetBaseName(string path)
         {
+            path = CygpathWindows(path);
             return Path.GetFileNameWithoutExtension(Path.GetFileName(path));
         }
         public static Assembly? AssemblyForTypeName(string typeName)
@@ -151,6 +155,7 @@ namespace Global
         }
         public static string? FindExePath(string exe, string cwd)
         {
+            cwd = CygpathWindows(cwd);
             exe = Environment.ExpandEnvironmentVariables(exe);
             if (Path.IsPathRooted(exe))
             {
@@ -162,14 +167,9 @@ namespace Global
             foreach (string test in PATH.Split(';'))
             {
                 string path = test.Trim();
-#if false
-                if (!String.IsNullOrEmpty(path) && File.Exists(Path.Combine(path, "dotnet4", exe)))
-                    return Path.GetFullPath(Path.Combine(path, "dotnet4", exe));
-#endif
                 if (!String.IsNullOrEmpty(path) && File.Exists(Path.Combine(path, exe)))
                     return Path.GetFullPath(Path.Combine(path, exe));
                 string baseName = Path.GetFileNameWithoutExtension(exe);
-                //baseName += ".bin";
                 if (!String.IsNullOrEmpty(path) && File.Exists(Path.Combine(path, $"{baseName}.bin", exe)))
                     return Path.GetFullPath(Path.Combine(path, $"{baseName}.bin", exe));
             }
@@ -315,6 +315,7 @@ namespace Global
         }
         public static byte[] ReadFileHeadBytes(string path, int maxSize)
         {
+            path = CygpathWindows(path);
             System.IO.FileStream fs = new System.IO.FileStream(
                 path,
                 System.IO.FileMode.Open,
@@ -337,6 +338,7 @@ namespace Global
         }
         public static bool LaunchProcess(string exePath, string[] args, Dictionary<string, string>? vars = null)
         {
+            exePath = CygpathWindows(exePath);
             string argList = "";
             for (int i = 0; i < args.Length; i++)
             {
@@ -408,6 +410,7 @@ namespace Global
         }
         public static int RunToConsole(string exePath, string[] args, Dictionary<string, string>? vars = null)
         {
+            exePath = CygpathWindows(exePath);
             string argList = "";
             for (int i = 0; i < args.Length; i++)
             {
@@ -546,14 +549,17 @@ namespace Global
         }
         public static void Prepare(string dirPath)
         {
+            dirPath = CygpathWindows(dirPath);
             Directory.CreateDirectory(dirPath);
         }
         public static void PrepareForFile(string filePath)
         {
+            filePath = CygpathWindows(filePath);
             Prepare(Path.GetDirectoryName(filePath)!);
         }
         public static void DownloadBinaryFromUrl(string url, string destinationPath)
         {
+            destinationPath = CygpathWindows(destinationPath);
             PrepareForFile(destinationPath);
 #pragma warning disable SYSLIB0014
             WebRequest objRequest = System.Net.HttpWebRequest.Create(url);
@@ -610,6 +616,7 @@ namespace Global
         }
         public static void WriteTextFileUtf8(string fileName, string content)
         {
+            fileName = CygpathWindows(fileName);
             using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.GetEncoding("UTF-8")))
             {
                 sw.Write(content.Replace("\r\n", "\n"));
