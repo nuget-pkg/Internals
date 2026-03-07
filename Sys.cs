@@ -416,6 +416,14 @@ namespace Global
                 .Replace(":", "")
                 ;
         }
+        public static string DateString(DateTime x)
+        {
+            return x.ToString("yyyy-MM-dd");
+        }
+        public static string DateStringCompact(DateTime x)
+        {
+            return x.ToString("yyyyMMdd");
+        }
         public static int RunToConsole(string exePath, string[] args, Dictionary<string, string>? vars = null)
         {
             exePath = CygpathWindows(exePath);
