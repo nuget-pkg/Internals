@@ -6,7 +6,6 @@ namespace Global
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    //using static Global.EasyObject;
     public class LiteDBProps :
         IExportToPlainObject,
         IImportFromPlainObject,
@@ -29,6 +28,20 @@ namespace Global
             }
         }
         private string? filePath = null;
+        public LiteDBProps(FileInfo fi)
+        {
+            this.filePath = fi.FullName;
+            Sys.PrepareForFile(this.filePath);
+            using (var connection = new LiteDatabase(new ConnectionString(this.filePath)
+            {
+                Connection = ConnectionType.Shared
+            }))
+            {
+                var collection = connection.GetCollection<Prop>("properties");
+                // Nameをユニークインデックスにする
+                collection.EnsureIndex(x => x.Name, true);
+            }
+        }
         public LiteDBProps(DirectoryInfo di)
         {
             this.filePath = Path.Combine(di.FullName, "properties.litedb");
