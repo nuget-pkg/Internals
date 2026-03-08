@@ -232,6 +232,7 @@ namespace Global
         }
         public static string CygpathWindows(string path)
         {
+            path = path.Replace(@"\", "/");
             if (Environment.OSVersion.Platform != PlatformID.Win32NT) return path;
             var m = FindFirstMatch(
                 path,
@@ -244,13 +245,14 @@ namespace Global
             {
                 if (m.Count == 2)
                 {
-                    return $"{m[1]}:/";
+                    return $"{m[1].ToUpper()}:/";
                 }
                 else if (m.Count == 3)
                 {
-                    return $"{m[1]}:/{m[2]}";
+                    return $"{m[1].ToUpper()}:/{m[2]}";
                 }
             }
+            path = path.Replace(@"\", "/");
             return path;
         }
         public static string[] ExpandWildcard(string path)
