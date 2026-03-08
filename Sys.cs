@@ -232,6 +232,7 @@ namespace Global
         }
         public static string CygpathWindows(string path)
         {
+            if (Environment.OSVersion.Platform != PlatformID.Win32NT) return path;
             var m = FindFirstMatch(
                 path,
                 "^/([a-zA-z])[/]?$",
