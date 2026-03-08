@@ -749,7 +749,6 @@ namespace Global
                 relative = AdjustFileName(relative);
                 result = Path.Combine(result, relative);
             }
-            result = result.Replace("\\", "/");
             PrepareForFile(result);
             return result;
         }
@@ -767,7 +766,6 @@ namespace Global
                 relative = AdjustFileName(relative);
                 result = Path.Combine(result, relative);
             }
-            result = result.Replace("\\", "/");
             Prepare(result);
             return result;
         }
