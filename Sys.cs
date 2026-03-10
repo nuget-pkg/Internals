@@ -802,6 +802,15 @@ namespace Global
             Log("[!! ABORTING...WITH EXIT CODE 1 !!]");
             Environment.Exit(1);
         }
+        public static Process? OpenUrl(string url)
+        {
+            ProcessStartInfo pi = new ProcessStartInfo()
+            {
+                FileName = url,
+                UseShellExecute = true,
+            };
+            return Process.Start(pi);
+        }
         [DllImport("msvcrt", CharSet = CharSet.Unicode)]
         internal static extern int _wsystem(string lpCommandLine);
         [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
