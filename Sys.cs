@@ -45,6 +45,7 @@ namespace Global
         {
             path = CygpathWindows(path);
             if (!SilentFlag) System.Console.Error.WriteLine($"Sys.SetCwd(): {path}");
+            Prepare(path);
             Directory.SetCurrentDirectory(path);
         }
         public static string GetFullPath(string path)
