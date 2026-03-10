@@ -32,6 +32,11 @@ namespace Global
             Console.OutputEncoding = Encoding.UTF8;
             Console.InputEncoding = Encoding.UTF8;
         }
+        public static void Exit(int exitCoed)
+        {
+            Console.Error.Write($"Global.Sys.Exit() was called with exitCode: {exitCoed}." + "\n");
+            Environment.Exit(exitCoed);
+        }
         public static string GetCwd()
         {
             return Directory.GetCurrentDirectory();
