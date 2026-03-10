@@ -812,6 +812,16 @@ namespace Global
             };
             return Process.Start(pi);
         }
+        public static string LimitStringLength(string s, int limit, string ellipsis = "...")
+        {
+            var enc = new UTF32Encoding();
+            byte[] byteUtf32 = enc.GetBytes(s);
+            if (byteUtf32.Length <= limit * 4) return s;
+            ArraySegment<byte> segment = new ArraySegment<byte>(byteUtf32, 0, limit * 4);
+            byteUtf32 = segment.ToArray();
+            string decodedString = enc.GetString(byteUtf32);
+            return decodedString + ellipsis;
+        }
         [DllImport("msvcrt", CharSet = CharSet.Unicode)]
         internal static extern int _wsystem(string lpCommandLine);
         [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
