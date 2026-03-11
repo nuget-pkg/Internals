@@ -29,8 +29,7 @@ namespace Global
         public static bool SilentFlag = false;
         public static void SetupConsoleUTF8()
         {
-            Console.OutputEncoding = Encoding.UTF8;
-            Console.InputEncoding = Encoding.UTF8;
+            Global.EasyObject.SetupConsoleEncoding(Encoding.UTF8);
         }
         public static void Exit(int exitCoed)
         {
