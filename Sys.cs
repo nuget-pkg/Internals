@@ -741,14 +741,19 @@ namespace Global
             }
             return metadata;
         }
+        public static string GetEnv(string name, string fallback = "")
+        {
+            return Environment.GetEnvironmentVariable(name) ?? fallback;
+        }
         public static string HomeFile(params string[] relatives)
         {
-            string? home = Environment.GetEnvironmentVariable("HOME");
-            if (home == null)
+            string home = GetEnv("HOME", "");
+            if (home == "")
             {
-                Crash("Global.Sys.HomeFile(): $HOME not set");
+                //Crash("Global.Sys.HomeFile(): $HOME not set");
+                home = Dirs.ProfilePath();
             }
-            string result = home!;
+            string result = home;
             foreach (var x in relatives)
             {
                 string relative = x;
@@ -760,12 +765,13 @@ namespace Global
         }
         public static string HomeFolder(params string[] relatives)
         {
-            string? home = Environment.GetEnvironmentVariable("HOME");
-            if (home == null)
+            string home = GetEnv("HOME", "");
+            if (home == "")
             {
-                Crash("Global.Sys.HomeFolder(): $HOME not set");
+                //Crash("Global.Sys.HomeFolder(): $HOME not set");
+                home = Dirs.ProfilePath();
             }
-            string result = home!;
+            string result = home;
             foreach (var x in relatives)
             {
                 string relative = x;
@@ -775,7 +781,7 @@ namespace Global
             Prepare(result);
             return result;
         }
-        public static void Crash(object? message = null)
+        public static void Crash(object? message = null, int exitCode = 1)
         {
             ShowDetail = false;
             Log("[!! PROGRAM CRASHED !!]");
@@ -795,12 +801,11 @@ namespace Global
             {
                 string trace = Environment.StackTrace;
                 var lines = TextToLines(trace);
-                //var lines2 = lines.Select(x => x.Trim()).ToList();
                 string trace2 = "\n" + string.Join("\n", lines);
                 Log(trace2, "Stack Trace");
             }
-            Log("[!! ABORTING...WITH EXIT CODE 1 !!]");
-            Environment.Exit(1);
+            Log($"[!! ABORTING...WITH EXIT CODE {exitCode} !!]");
+            Environment.Exit(exitCode);
         }
         public static Process? OpenUrl(string url)
         {
