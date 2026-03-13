@@ -250,14 +250,14 @@ namespace Global
             {
                 if (m.Count == 2)
                 {
-                    return $"{m[1].ToUpper()}:/";
+                    path = $"{m[1].ToUpper()}:/";
                 }
                 else if (m.Count == 3)
                 {
-                    return $"{m[1].ToUpper()}:/{m[2]}";
+                    path = $"{m[1].ToUpper()}:/{m[2]}";
                 }
             }
-            path = path.Replace(@"\", "/");
+            path = path.Replace('/', Path.DirectorySeparatorChar);
             return path;
         }
         public static string[] ExpandWildcard(string path)
@@ -744,6 +744,10 @@ namespace Global
         public static string GetEnv(string name, string fallback = "")
         {
             return Environment.GetEnvironmentVariable(name) ?? fallback;
+        }
+        public static void SetEnv(string name, string value)
+        {
+            Environment.SetEnvironmentVariable(name, value);
         }
         public static string HomeFile(params string[] relatives)
         {
