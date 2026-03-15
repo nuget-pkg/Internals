@@ -31,6 +31,14 @@ namespace Global
         {
             Global.EasyObject.SetupConsoleEncoding(Encoding.UTF8);
         }
+        public static bool IsWindowsPlatform()
+        {
+#if NETFRAMEWORK
+            return (Environment.OSVersion.Platform == PlatformID.Win32NT);
+#else
+            return (OperatingSystem.IsWindows());
+#endif
+        }
         public static void Exit(int exitCoed)
         {
             Console.Error.Write($"Global.Sys.Exit() was called with exitCode: {exitCoed}." + "\n");
