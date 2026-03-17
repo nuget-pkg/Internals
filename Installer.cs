@@ -1,21 +1,19 @@
-namespace Global
-{
-    using System;
-    using System.IO.Compression;
-    using System.IO;
-    using System.Linq;
-    using System.Security.Cryptography;
-    using System.Reflection;
-    using System.Text;
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace Global {
 #if GLOBAL_SYS
     public
- #else
+#else
     internal
 #endif
-    class Installer
-    {
-        public static string InstallZipFromURL(string url, string targetDir, string baseName)
-        {
+    class Installer {
+        public static string InstallZipFromURL(string url, string targetDir, string baseName) {
             string guid = Sys.GuidString();
             string zipPath = Path.Combine(targetDir, baseName + ".zip");
             SafeDownload(url, zipPath);
@@ -23,93 +21,95 @@ namespace Global
             SafeZipExtract(zipPath, installDir);
             return installDir;
         }
-        public static string? InstallResourceDll(Assembly assembly, string targetDir, string name)
-        {
+        public static string? InstallResourceDll(Assembly assembly, string targetDir, string name) {
             string guid = Sys.GuidString();
-            var dllBytes = Sys.ResourceAsBytes(assembly, name);
-            if (dllBytes == null) return null;
+            byte[]? dllBytes = Sys.ResourceAsBytes(assembly, name);
+            if (dllBytes == null) {
+                return null;
+            }
 #pragma warning disable SYSLIB0021
             SHA256 crypto = new SHA256CryptoServiceProvider();
 #pragma warning restore SYSLIB0021
             byte[] hashValue = crypto.ComputeHash(dllBytes);
-            string sha256 = String.Join("", hashValue.Select(x => x.ToString("x2")).ToArray());
+            string sha256 = string.Join("", hashValue.Select(x => x.ToString("x2")).ToArray());
             string dllName = $"{Path.GetFileNameWithoutExtension(name.Replace(":", "-"))}-{sha256}.dll";
-            var dllPath = Path.Combine(targetDir, dllName);
+            string dllPath = Path.Combine(targetDir, dllName);
             SafeFileWrite(dllPath, dllBytes);
             return dllPath;
         }
-        public static string? InstallResourceZip(Assembly assembly, string targetDir, string name)
-        {
+        public static string? InstallResourceZip(Assembly assembly, string targetDir, string name) {
             string guid = Sys.GuidString();
-            var zipBytes = Sys.ResourceAsBytes(assembly, name);
-            if (zipBytes == null) return null;
+            byte[]? zipBytes = Sys.ResourceAsBytes(assembly, name);
+            if (zipBytes == null) {
+                return null;
+            }
 #pragma warning disable SYSLIB0021
             SHA256 crypto = new SHA256CryptoServiceProvider();
 #pragma warning restore SYSLIB0021
             byte[] hashValue = crypto.ComputeHash(zipBytes);
-            string sha256 = String.Join("", hashValue.Select(x => x.ToString("x2")).ToArray());
+            string sha256 = string.Join("", hashValue.Select(x => x.ToString("x2")).ToArray());
             string zipName = $"{Path.GetFileNameWithoutExtension(name.Replace(":", "-"))}-{sha256}";
-            var extractPath = Path.Combine(targetDir, zipName);
+            string extractPath = Path.Combine(targetDir, zipName);
             string zipPath = Path.Combine(targetDir, $"{zipName}.zip");
             SafeFileWrite(zipPath, zipBytes);
             SafeZipExtract(zipPath, extractPath);
             return extractPath;
         }
-        public static Assembly? LoadAssemblyFromResourceZip(Assembly assembly, string targetDir, string resName, string asmName)
-        {
+        public static Assembly? LoadAssemblyFromResourceZip(Assembly assembly, string targetDir, string resName, string asmName) {
             string? instDir = InstallResourceZip(assembly, targetDir, resName);
-            if (instDir == null) return null;
+            if (instDir == null) {
+                return null;
+            }
+
             var asm = Assembly.LoadFrom(Path.Combine(instDir, asmName));
             return asm;
 
         }
-        public static void SafeDownload(string url, string filePath)
-        {
-            if (File.Exists(filePath)) return;
+        public static void SafeDownload(string url, string filePath) {
+            if (File.Exists(filePath)) {
+                return;
+            }
+
             string guid = Sys.GuidString();
             System.Console.Error.WriteLine($"Donloading to {filePath}...");
             Sys.DownloadBinaryFromUrl(url, $"{filePath}.{guid}");
-            try
-            {
+            try {
                 File.Move($"{filePath}.{guid}", filePath);
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 ;
             }
         }
-        public static void SafeFileWrite(string filePath, byte[] contents)
-        {
-            if (File.Exists(filePath)) return;
+        public static void SafeFileWrite(string filePath, byte[] contents) {
+            if (File.Exists(filePath)) {
+                return;
+            }
             //Console.Error.WriteLine($"[Log] Writing to {filePath}...");
             string guid = Sys.GuidString();
             Sys.PrepareForFile(filePath);
             File.WriteAllBytes($"{filePath}.{guid}", contents);
-            try
-            {
+            try {
                 File.Move($"{filePath}.{guid}", filePath);
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 ;
             }
         }
-        public static void SafeFileWrite(string filePath, string text)
-        {
+        public static void SafeFileWrite(string filePath, string text) {
             SafeFileWrite(filePath, Encoding.UTF8.GetBytes(text));
         }
-        public static void SafeZipExtract(string zipPath, string dirPath)
-        {
-            if (Directory.Exists(dirPath)) return;
+        public static void SafeZipExtract(string zipPath, string dirPath) {
+            if (Directory.Exists(dirPath)) {
+                return;
+            }
+
             System.Console.Error.WriteLine($"Extracting to {dirPath}...");
             string guid = Sys.GuidString();
             ZipFile.ExtractToDirectory(zipPath, $"{dirPath}.{guid}");
-            try
-            {
+            try {
                 Directory.Move($"{dirPath}.{guid}", dirPath);
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 ;
             }
         }
