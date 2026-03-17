@@ -692,6 +692,8 @@ namespace Global {
                 .Replace("?", "？")
                 .Replace("[", "⁅")
                 .Replace("]", "⁆")
+                .Replace("(", "｟")
+                .Replace(")", "｠")
                 ;
             DebugLog(replaceSurrogate, "replaceSurrogate(1)");
             fileName = RemoveSurrogatePair(fileName, replaceSurrogate);
