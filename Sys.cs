@@ -691,6 +691,7 @@ namespace Global {
                 .Replace(")", "｠")
                 .Replace("（", "｟")
                 .Replace("）", "｠")
+                .Replace("^", "＾")
                 .Replace("~", "～")
                 .Replace("\\", "＼")
                 .Replace("|", "￤")
