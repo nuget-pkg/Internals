@@ -40,7 +40,7 @@ namespace Global {
 #if NETFRAMEWORK
             return Environment.OSVersion.Platform == PlatformID.Win32NT;
 #else
-            return (OperatingSystem.IsWindows());
+            return OperatingSystem.IsWindows();
 #endif
         }
         public static void Exit(int exitCoed) {
@@ -681,19 +681,41 @@ namespace Global {
         }
         public static string AdjustFileName(string fileName, string replaceSurrogate = "★") {
             fileName = fileName
-                .Replace("'", "’")
+                .Replace("!", "！")
                 .Replace("\"", "”")
-                .Replace(":", "：")
-                .Replace("/", "／")
-                .Replace("\\", "＼")
-                .Replace("　", " ")
-                .Replace("|", "￤")
                 .Replace("#", "＃")
-                .Replace("?", "？")
-                .Replace("[", "⁅")
-                .Replace("]", "⁆")
+                .Replace("%", "％")
+                .Replace("&", "＆")
+                .Replace("'", "’")
                 .Replace("(", "｟")
                 .Replace(")", "｠")
+                .Replace("（", "｟")
+                .Replace("）", "｠")
+                .Replace("~", "～")
+                .Replace("\\", "＼")
+                .Replace("|", "￤")
+                .Replace("｜", "￤")
+                .Replace("`", "｀")
+                .Replace(";", "；")
+                .Replace(":", "：")
+                .Replace("+", "＋")
+                .Replace("*", "＊")
+                .Replace("[", "⁅")
+                .Replace("]", "⁆")
+                .Replace("［", "⁅")
+                .Replace("］", "⁆")
+                .Replace("{", "【 ")
+                .Replace("}", "】")
+                .Replace("｛", "【")
+                .Replace("｝", "】")
+                .Replace("<", "＜")
+                .Replace(">", "＞")
+                .Replace("/", "／")
+                .Replace("?", "？")
+                //〘あいうえお〙
+                //〚あいうえお〛
+                //〖あいうえお〗
+                .Replace("　", " ")
                 ;
             DebugLog(replaceSurrogate, "replaceSurrogate(1)");
             fileName = RemoveSurrogatePair(fileName, replaceSurrogate);
