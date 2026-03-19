@@ -83,9 +83,9 @@ namespace Global {
                 return;
             }
             projFileName = Path.GetFullPath(projFileName);
-            if (projFileName.Contains("+")) {
-                return;
-            }
+            //if (projFileName.Contains("+")) {
+            //    return;
+            //}
 
             if (!SrcList.Contains(projFileName) && !projFileName.Contains(@"\obj\")) {
                 SrcList.Add(projFileName);
