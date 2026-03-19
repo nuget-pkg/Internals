@@ -681,12 +681,15 @@ namespace Global {
         }
         public static string AdjustFileName(string fileName, string replaceSurrogate = "★") {
             fileName = fileName
-                .Replace("!", "！")
-                .Replace("\"", "”")
+                .Replace("!", "❢")
+                .Replace("！", "❢")
+                //.Replace("\"", "”")
+                .Replace("\"", "“")
+                //.Replace("'", "’")
+                .Replace("'", "‘")
                 .Replace("#", "＃")
                 .Replace("%", "％")
                 .Replace("&", "＆")
-                .Replace("'", "’")
                 .Replace("(", "｟")
                 .Replace(")", "｠")
                 .Replace("（", "｟")
@@ -699,21 +702,23 @@ namespace Global {
                 .Replace("`", "｀")
                 .Replace(";", "；")
                 .Replace(":", "：")
-                .Replace("+", "＋")
+                //.Replace("+", "＋")
                 .Replace("*", "＊")
                 .Replace("[", "⁅")
                 .Replace("]", "⁆")
                 .Replace("［", "⁅")
                 .Replace("］", "⁆")
-                .Replace("{", "【 ")
-                .Replace("}", "】")
-                .Replace("｛", "【")
-                .Replace("｝", "】")
-                .Replace("<", "＜")
-                .Replace(">", "＞")
+                .Replace("{", "〘")
+                .Replace("}", "〙")
+                .Replace("｛", "〘")
+                .Replace("｝", "〙")
+                .Replace("<", "≪")
+                .Replace(">", "≫")
+                .Replace("＜", "≪")
+                .Replace("＞", "≫")
                 .Replace("/", "／")
-                .Replace("?", "？")
-                //〘あいうえお〙
+                .Replace("?", "❔")
+                .Replace("？", "❔")
                 //〚あいうえお〛
                 //〖あいうえお〗
                 .Replace("　", " ")
@@ -724,8 +729,10 @@ namespace Global {
         }
         public static string AdjustMetaData(string metadata, string replaceSurrogate = "★") {
             metadata = metadata
-                .Replace("'", "’")
-                .Replace("\"", "”")
+                //.Replace("\"", "”")
+                .Replace("\"", "“")
+                //.Replace("'", "’")
+                .Replace("'", "‘")
                 .Replace("\\", "＼")
                 ;
             metadata = RemoveSurrogatePair(metadata, replaceSurrogate);
