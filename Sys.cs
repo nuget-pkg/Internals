@@ -777,21 +777,22 @@ namespace Global {
             ShowDetail = false;
             DebugLog("[!! PROGRAM CRASHED !!]");
             if (message != null && !(message is Exception)) {
-                DebugLog(message, "Message");
+                Log(message, "Message");
             }
             if (message is Exception e) {
-                string trace = e.ToString();
-                List<string> lines = TextToLines(trace);
-                List<string> lines2 = lines.Select(x => $"      {x}").ToList();
-                string trace2 = "\n" + string.Join("\n", lines2);
-                DebugLog(trace2, "Stack Trace");
+                Console.Error.WriteLine(e.ToString());
+                //string trace = e.ToString();
+                //List<string> lines = TextToLines(trace);
+                //List<string> lines2 = lines.Select(x => $"      {x}").ToList();
+                //string trace2 = "\n" + string.Join("\n", lines2);
+                //DebugLog(trace2, "Stack Trace");
             } else {
                 string trace = Environment.StackTrace;
                 List<string> lines = TextToLines(trace);
                 string trace2 = "\n" + string.Join("\n", lines);
                 DebugLog(trace2, "Stack Trace");
             }
-            DebugLog($"[!! ABORTING...WITH EXIT CODE {exitCode} !!]");
+            Log($"[!! ABORTING...WITH EXIT CODE {exitCode} !!]");
             Environment.Exit(exitCode);
         }
         public static Process? OpenUrl(string url) {
