@@ -22,21 +22,21 @@ namespace Global {
         public List<string> DefList = [];
         public List<string> IcoList = [];
         public CscsUtil(string projFileName) {
-            Log(projFileName, "projFileName");
+            Debug(projFileName, "projFileName");
             projDir = Path.GetDirectoryName(Path.GetFullPath(projFileName))!;
-            Log(projDir, "projDir");
+            Debug(projDir, "projDir");
             home = FindHome(new DirectoryInfo(projDir));
-            Log(home, "home");
+            Debug(home, "home");
         }
         public void DebugDump() {
-            Log(OutType, "OutType");
-            Log(SrcList, "SrcList");
-            Log(PkgList, "PkgList");
-            Log(AsmList, "AsmList");
-            Log(ResList, "ResList");
-            Log(DllList, "DllList");
-            Log(DefList, "DefList");
-            Log(IcoList, "IcoList");
+            Debug(OutType, "OutType");
+            Debug(SrcList, "SrcList");
+            Debug(PkgList, "PkgList");
+            Debug(AsmList, "AsmList");
+            Debug(ResList, "ResList");
+            Debug(DllList, "DllList");
+            Debug(DefList, "DefList");
+            Debug(IcoList, "IcoList");
         }
         public static string? FindHome(DirectoryInfo dir) {
             FileInfo[] files = dir.GetFiles();
@@ -60,7 +60,7 @@ namespace Global {
         public void ParseProject(string projFileName, bool generateDllProject) {
             this.generateDllProject = generateDllProject;
             OutType = this.generateDllProject ? "Library" : "Exe";
-            Log(projFileName, "CscsUtil.ParseProject()");
+            Debug(projFileName, "CscsUtil.ParseProject()");
             string cwd = Directory.GetCurrentDirectory();
             projFileName = Path.GetFullPath(projFileName);
             ParseProjectHelper(projFileName);
@@ -83,10 +83,6 @@ namespace Global {
                 return;
             }
             projFileName = Path.GetFullPath(projFileName);
-            //if (projFileName.Contains("+")) {
-            //    return;
-            //}
-
             if (!SrcList.Contains(projFileName) && !projFileName.Contains(@"\obj\")) {
                 SrcList.Add(projFileName);
             }
@@ -139,7 +135,6 @@ namespace Global {
                 if (SrcList.Contains(file)) {
                     continue;
                 }
-
                 ParseProjectHelper(file);
             }
         }
@@ -149,7 +144,7 @@ namespace Global {
             }
             string source = File.ReadAllText(srcPath);
             string cwd = Directory.GetCurrentDirectory();
-            Log(cwd, "cwd");
+            Debug(cwd, "cwd");
             Directory.SetCurrentDirectory(Path.GetDirectoryName(srcPath)!);
             string[] lines = Sys.TextToLines(source).ToArray();
             for (int i = 0; i < lines.Length; i++) {
