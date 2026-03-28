@@ -120,8 +120,7 @@ namespace Global {
                 }
                 if (args[i].Contains(" ")) {
                     argList += $"\"{args[i]}\"";
-                }
-                else {
+                } else {
                     argList += args[i];
                 }
             }
@@ -275,6 +274,19 @@ namespace Global {
         }
         public static void WorkAroundTlsSecurity() {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+        }
+        public static string SafeGetBasename(string path) {
+            try {
+                path = path.Trim();
+                path = path.Replace("\\", "/");
+                var split = path.Split('/');
+                if (split.Length == 0) {
+                    return path;
+                }
+                return split[split.Length - 1];
+            } catch {
+                return path;
+            }
         }
         [DllImport("msvcrt", CharSet = CharSet.Unicode)]
         internal static extern int _wsystem(string lpCommandLine);
