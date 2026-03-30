@@ -18,7 +18,8 @@ namespace Global;
 public static partial class Sys
 {
 #else
-    public static partial class EasySystem {
+public static partial class EasySystem
+{
 #endif
     public static void SetupConsoleUTF8()
     {
@@ -123,34 +124,6 @@ public static partial class Sys
                 return true;
 
         return false;
-    }
-
-    public static bool LaunchProcess(string exePath, string[] args, Dictionary<string, string>? vars = null)
-    {
-        exePath = CygpathWindows(exePath);
-        var argList = "";
-        for (var i = 0; i < args.Length; i++)
-        {
-            if (i > 0) argList += " ";
-            if (args[i].Contains(" "))
-                argList += $"\"{args[i]}\"";
-            else
-                argList += args[i];
-        }
-
-        var process = new Process();
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.RedirectStandardError = true;
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.CreateNoWindow = true;
-        process.StartInfo.FileName = exePath;
-        process.StartInfo.Arguments = argList;
-        if (vars != null)
-            foreach (var key in vars.Keys)
-                process.StartInfo.EnvironmentVariables[key] = vars[key];
-
-        var result = process.Start();
-        return result;
     }
 
     public static string DateTimeString(DateTime x)
