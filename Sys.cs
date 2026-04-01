@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,33 +8,26 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-
 // ReSharper disable UnusedMember.Global
 
 // ReSharper disable once CheckNamespace
 namespace Global;
 #if GLOBAL_SYS
-public static partial class Sys
-{
+public static partial class Sys {
 #else
 public static partial class EasySystem
 {
 #endif
-    public static void SetupConsoleUTF8()
-    {
+    public static void SetupConsoleUTF8() {
         EasyObject.SetupConsoleEncoding(Encoding.UTF8);
     }
-
-    public static Assembly? AssemblyForTypeName(string typeName)
-    {
+    public static Assembly? AssemblyForTypeName(string typeName) {
         var type = Type.GetType(typeName);
         if (type == null) return null;
         return type.Assembly;
     }
-
     public static object? CallAssemblyStaticMethod(Assembly asm, string typeName, string methodName,
-        params object[] args)
-    {
+        params object[] args) {
         if (asm == null) return null;
         var type = asm.GetType(typeName, false);
         if (type == null) return null;
@@ -44,119 +36,64 @@ public static partial class EasySystem
         var methdResult = method.Invoke(null, args);
         return methdResult;
     }
-
-    public static int RunCommand(string exe, params string[] args)
-    {
+    public static int RunCommand(string exe, params string[] args) {
         var cmd = exe;
         for (var i = 0; i < args.Length; i++) cmd += string.Format(" \"{0}\"", args[i]);
         if (!SilentFlag) Console.Error.WriteLine($"RunCommand: {cmd}");
         return _wsystem(cmd);
     }
-
-    public static bool CheckFixedArguments(string programName, int n, string[] args)
-    {
+    public static bool CheckFixedArguments(string programName, int n, string[] args) {
         if (args.Length == n) return true;
         var msg = string.Format("{0} requires {1} argument(s); but {2} argument(s) specified", programName, n,
             args.Length);
         return false;
     }
-
-    public static string GuidString()
-    {
+    public static string GuidString() {
         return Guid.NewGuid().ToString("D");
     }
-
-    public static uint GetACP()
-    {
+    public static uint GetACP() {
         return NativeMethods.GetACP();
     }
-
-    public static uint SessionId()
-    {
+    public static uint SessionId() {
         if (Environment.OSVersion.Platform == PlatformID.Win32NT) return NativeMethods.WTSGetActiveConsoleSessionId();
         return 0;
     }
-
-    public static string RandomString(Random r, string[] chars, int length)
-    {
+    public static string RandomString(Random r, string[] chars, int length) {
         if (chars.Length == 0 || length < 0) throw new ArgumentException();
         var sb = new StringBuilder();
-        for (var i = 0; i < length; i++)
-        {
+        for (var i = 0; i < length; i++) {
             var idx = r.Next(0, chars.Length);
             sb.Append(chars[idx]);
         }
-
         return sb.ToString();
     }
-
-    public static IEnumerable<string> SplitStringByLengthLazy(string str, int maxLength)
-    {
+    public static IEnumerable<string> SplitStringByLengthLazy(string str, int maxLength) {
         for (var index = 0; index < str.Length; index += maxLength)
             yield return str.Substring(index, Math.Min(maxLength, str.Length - index));
     }
-
-    public static List<string> SplitStringByLengthList(string str, int maxLength)
-    {
+    public static List<string> SplitStringByLengthList(string str, int maxLength) {
         return SplitStringByLengthLazy(str, maxLength).ToList();
     }
-
-    public static byte[] ReadFileHeadBytes(string path, int maxSize)
-    {
-        path = CygpathWindows(path);
-        var fs = new FileStream(
-            path,
-            FileMode.Open,
-            FileAccess.Read);
-        var array = new byte[maxSize];
-        var size = fs.Read(array, 0, array.Length);
-        fs.Close();
-        var result = new byte[size];
-        Array.Copy(array, 0, result, 0, result.Length);
-        return result;
-    }
-
-    public static bool IsBinaryFile(string path)
-    {
-        var head = ReadFileHeadBytes(path, 8000);
-        for (var i = 0; i < head.Length; i++)
-            if (head[i] == 0)
-                return true;
-
-        return false;
-    }
-
-    public static string DateTimeString(DateTime x)
-    {
+    public static string DateTimeString(DateTime x) {
         return x.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz");
     }
-
-    public static string DateTimeStringSafe(DateTime x)
-    {
+    public static string DateTimeStringSafe(DateTime x) {
         // result string can be used as part of file name/path.
         return x.ToString("yyyy-MM-ddTHH-mm-ss.fffffffzzz")
                 .Replace("T", "+")
                 .Replace(":", "")
             ;
     }
-
-    public static string DateString(DateTime x)
-    {
+    public static string DateString(DateTime x) {
         return x.ToString("yyyy-MM-dd");
     }
-
-    public static string DateStringCompact(DateTime x)
-    {
+    public static string DateStringCompact(DateTime x) {
         return x.ToString("yyyyMMdd");
     }
-
-    public static string AssemblyName(Assembly assembly)
-    {
+    public static string AssemblyName(Assembly assembly) {
         return System.Reflection.AssemblyName.GetAssemblyName(assembly.Location).Name!;
     }
-
-    public static int FreeTcpPort()
-    {
+    public static int FreeTcpPort() {
         // https://stackoverflow.com/questions/138043/find-the-next-tcp-port-in-net
         var l = new TcpListener(IPAddress.Loopback, 0);
         l.Start();
@@ -164,37 +101,27 @@ public static partial class EasySystem
         l.Stop();
         return port;
     }
-
-    public static string FullName(dynamic x)
-    {
+    public static string FullName(dynamic x) {
         if (x is null) return "null";
         var fullName = ((object)x).GetType().FullName!;
         return fullName.Split('`')[0];
     }
-
-    public static string[] ResourceNames(Assembly assembly)
-    {
+    public static string[] ResourceNames(Assembly assembly) {
         return assembly.GetManifestResourceNames();
     }
-
-    public static Stream? ResourceAsStream(Assembly assembly, string resName)
-    {
+    public static Stream? ResourceAsStream(Assembly assembly, string resName) {
         var resourceName = resName.Contains(":") ? resName.Replace(":", ".") : $"{AssemblyName(assembly)}.{resName}";
         var stream = assembly.GetManifestResourceStream(resourceName);
-        if (stream == null)
-        {
+        if (stream == null) {
             Console.Error.WriteLine($"Resoucde '{resourceName}' not found!");
             Console.Error.WriteLine("Available resouce names are: ");
             var names = ResourceNames(assembly);
             foreach (var name in names) Console.Error.WriteLine($"  {name}");
             Environment.Exit(1);
         }
-
         return stream;
     }
-
-    public static string? StreamAsText(Stream? stream)
-    {
+    public static string? StreamAsText(Stream? stream) {
         if (stream is null) return null;
         var pos = stream.Position;
         var streamReader = new StreamReader(stream);
@@ -203,15 +130,11 @@ public static partial class EasySystem
         stream.Position = pos;
         return text;
     }
-
-    public static string? ResourceAsText(Assembly assembly, string resName)
-    {
+    public static string? ResourceAsText(Assembly assembly, string resName) {
         var stream = ResourceAsStream(assembly, resName);
         return StreamAsText(stream);
     }
-
-    public static byte[]? StreamAsBytes(Stream? stream)
-    {
+    public static byte[]? StreamAsBytes(Stream? stream) {
         if (stream is null) return null;
         var pos = stream.Position;
         var bytes = new byte[(int)stream.Length];
@@ -219,48 +142,34 @@ public static partial class EasySystem
         stream.Position = pos;
         return bytes;
     }
-
-    public static byte[]? ResourceAsBytes(Assembly assembly, string resName)
-    {
+    public static byte[]? ResourceAsBytes(Assembly assembly, string resName) {
         var stream = ResourceAsStream(assembly, resName);
         return StreamAsBytes(stream);
     }
-
-    public static Assembly? LoadFromResource(Assembly assembly, string name)
-    {
+    public static Assembly? LoadFromResource(Assembly assembly, string name) {
         var bytes = ResourceAsBytes(assembly, name);
         if (bytes == null) return null;
         return Assembly.Load(bytes);
     }
-
-    public static dynamic CreateInstanceFromResource(Assembly thisAssemby, string resName, string className)
-    {
+    public static dynamic CreateInstanceFromResource(Assembly thisAssemby, string resName, string className) {
         var assembly = LoadFromResource(thisAssemby, resName);
-        if (assembly == null)
-        {
+        if (assembly == null) {
             Console.Error.WriteLine($"Failed to load assembly from resouce '{resName}'");
             Environment.Exit(1);
         }
-
         var classType = assembly!.GetType(className);
-        if (classType == null)
-        {
+        if (classType == null) {
             Console.Error.WriteLine($"Failed to find class '{className}' from resouce '{resName}'");
             Environment.Exit(1);
         }
-
         return Activator.CreateInstance(classType!)!;
     }
-
-    public static void WriteTextFileUtf8(string fileName, string content)
-    {
+    public static void WriteTextFileUtf8(string fileName, string content) {
         fileName = CygpathWindows(fileName);
         using var sw = new StreamWriter(fileName, false, Encoding.GetEncoding("UTF-8"));
         sw.Write(content.Replace("\r\n", "\n"));
     }
-
-    public static bool CanConvertAllToSjis(string text)
-    {
+    public static bool CanConvertAllToSjis(string text) {
         // Shift_JIS (または CP932) のエンコーディングを取得
         // "shift_jis" は純粋なJIS規格、"cp932" はWindows拡張を含むSJIS
         var sjis = Encoding.GetEncoding("shift_jis");
@@ -271,9 +180,7 @@ public static partial class EasySystem
         // 変換前と後で一致するか確認（不一致＝表せない文字がある）
         return text == decodedText;
     }
-
-    public static string GetStringFromUrl(string url)
-    {
+    public static string GetStringFromUrl(string url) {
 #pragma warning disable SYSLIB0014
         var request = WebRequest.Create(url) as HttpWebRequest;
 #pragma warning restore SYSLIB0014
@@ -282,9 +189,7 @@ public static partial class EasySystem
         using var reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
         return reader.ReadToEnd();
     }
-
-    public static List<string> GetMacAddressList()
-    {
+    public static List<string> GetMacAddressList() {
         var list = NetworkInterface
             .GetAllNetworkInterfaces()
             .Where(nic =>
@@ -294,44 +199,32 @@ public static partial class EasySystem
             .ToList();
         return list;
     }
-
-    public static void WorkAroundTlsSecurity()
-    {
+    public static void WorkAroundTlsSecurity() {
         ServicePointManager.SecurityProtocol =
             SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
     }
-
-    public static string SafeGetBasename(string path)
-    {
-        try
-        {
+    public static string SafeGetBasename(string path) {
+        try {
             path = path.Trim();
             path = path.Replace("\\", "/");
             var split = path.Split('/');
             if (split.Length == 0) return path;
             return split[split.Length - 1];
         }
-        catch
-        {
+        catch {
             return path;
         }
     }
-
     [DllImport("msvcrt", CharSet = CharSet.Unicode)]
     internal static extern int _wsystem(string lpCommandLine);
-
     [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
     internal static extern IntPtr LoadLibraryW(string lpFileName);
-
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     public static extern IntPtr LoadLibraryExW(string dllToLoad, IntPtr hFile, LoadLibraryFlags flags);
-
     [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = false)]
     public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
-
     [Flags]
-    public enum LoadLibraryFlags : uint
-    {
+    public enum LoadLibraryFlags : uint {
         DONT_RESOLVE_DLL_REFERENCES = 0x00000001,
         LOAD_IGNORE_CODE_AUTHZ_LEVEL = 0x00000010,
         LOAD_LIBRARY_AS_DATAFILE = 0x00000002,
@@ -342,12 +235,9 @@ public static partial class EasySystem
         LOAD_LIBRARY_SEARCH_SYSTEM32 = 0x00000800,
         LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = 0x00001000
     }
-
-    internal static class NativeMethods
-    {
+    internal static class NativeMethods {
         [DllImport("kernel32.dll")]
         internal static extern uint WTSGetActiveConsoleSessionId();
-
         [DllImport("kernel32.dll")]
         internal static extern uint GetACP();
     }
