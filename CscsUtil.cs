@@ -58,7 +58,7 @@ namespace Global {
             {
                 return new DirectoryInfo(home).FullName;
             }
-            return "";
+            return null;
         }
         private string AdjustPath(string path) {
             if (home != null) {
