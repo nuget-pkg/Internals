@@ -19,7 +19,7 @@ public static partial class EasySystem
 {
 #endif
     public static void SetupConsoleUTF8() {
-        EasyObject.SetupConsoleEncoding(Encoding.UTF8);
+        Core.CoreObject.SetupConsoleEncoding(Encoding.UTF8);
     }
     public static Assembly? AssemblyForTypeName(string typeName) {
         var type = Type.GetType(typeName);

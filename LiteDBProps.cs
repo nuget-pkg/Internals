@@ -46,7 +46,7 @@ namespace Global {
         }
         public LiteDBProps(string appNam) : this(new DirectoryInfo(Dirs.ProfilePath(appNam))) {
         }
-        public EasyObject Get(string name, object? fallback = null) {
+        public Core.CoreObject Get(string name, object? fallback = null) {
             using LiteDatabase connection = new LiteDatabase(new ConnectionString(filePath) {
                 Connection = ConnectionType.Shared
             });
@@ -55,12 +55,12 @@ namespace Global {
             Prop? result = collection.Find(x => x.Name == name).FirstOrDefault();
             connection.Commit();
             if (result == null) {
-                return EasyObject.FromObject(fallback);
+                return Core.CoreObject.FromObject(fallback);
             }
-            return EasyObject.FromObject(result.Data);
+            return Core.CoreObject.FromObject(result.Data);
         }
         public void Put(string name, dynamic? data) {
-            data = EasyObject.FromObject(data).ExportToPlainObject();
+            data = Core.CoreObject.FromObject(data).ExportToPlainObject();
             using LiteDatabase connection = new LiteDatabase(new ConnectionString(filePath) {
                 Connection = ConnectionType.Shared
             });
@@ -121,19 +121,19 @@ namespace Global {
             }
         }
         public override string ToString() {
-            return EasyObject.FromObject(this).ToJson(indent: true, keyAsSymbol: true);
+            return Core.CoreObject.FromObject(this).ToJson(indent: true, keyAsSymbol: true);
         }
 
         public object? ExportToPlainObject() {
             List<string> keys = Keys;
-            EasyObject eo = EasyObject.NewObject();
+            Core.CoreObject eo = Core.CoreObject.NewObject();
             foreach (string key in keys) {
                 eo[key] = Get(key);
             }
             return eo.ToObject();
         }
         public void ImportFromPlainObject(object? x) {
-            EasyObject eo = EasyObject.FromObject(x);
+            Core.CoreObject eo = Core.CoreObject.FromObject(x);
             if (!eo.IsObject) {
                 Sys.Crash("LiteDBProps.ImportFromPlainObject(): argumet is not object/dictionary!");
             }
@@ -144,11 +144,11 @@ namespace Global {
             }
         }
         public string ExportToCommonJson() {
-            EasyObject eo = EasyObject.FromObject(ExportToPlainObject());
+            Core.CoreObject eo = Core.CoreObject.FromObject(ExportToPlainObject());
             return eo.ToJson(indent: true);
         }
         public void ImportFromCommonJson(string x) {
-            EasyObject eo = EasyObject.FromJson(x);
+            Core.CoreObject eo = Core.CoreObject.FromJson(x);
             dynamic? po = eo.ToObject();
             ImportFromPlainObject(po);
         }

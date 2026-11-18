@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using static Global.EasyObject;
+using static Core.CoreObject;
 
 #if USE_JSON_API
 namespace Global {
@@ -22,7 +22,7 @@ namespace Global {
         public IntPtr HandleNativeCall(Type apiType, IntPtr nameAddr, IntPtr inputAddr) {
             string name = Sys.UTF8AddrToString(nameAddr);
             string input = Sys.UTF8AddrToString(inputAddr);
-            EasyObject args = FromJson(input)!;
+            Core.CoreObject args = Core.CoreObject.FromJson(input)!;
             MethodInfo? mi = apiType.GetMethod(name);
             dynamic? result = null;
             if (mi == null) {
@@ -30,7 +30,7 @@ namespace Global {
             } else {
                 try {
                     result = mi.Invoke(null, new object[] { args });
-                    EasyObject okResult = EasyObject.EmptyArray;
+                    Core.CoreObject okResult = Core.CoreObject.EmptyArray;
                     okResult.Add(result);
                     result = okResult;
                 }
@@ -48,7 +48,7 @@ namespace Global {
             }
             string name = Sys.UTF8AddrToString(nameAddr);
             string input = Sys.UTF8AddrToString(inputAddr);
-            EasyObject args = FromJson(input)!;
+            Core.CoreObject args = Core.CoreObject.FromJson(input)!;
             MethodInfo? mi = apiType.GetMethod(name);
             dynamic? result = null;
             if (mi == null) {
@@ -56,7 +56,7 @@ namespace Global {
             } else {
                 try {
                     result = mi.Invoke(null, new object[] { args });
-                    EasyObject okResult = EasyObject.EmptyArray;
+                    Core.CoreObject okResult = Core.CoreObject.EmptyArray;
                     okResult.Add(result);
                     result = okResult;
                 }
@@ -70,7 +70,7 @@ namespace Global {
             return HandleCallPtr.Value;
         }
         public string HandleDotNetCall(Type apiType, string name, string input) {
-            EasyObject args = FromJson(input)!;
+            Core.CoreObject args = Core.CoreObject.FromJson(input)!;
             MethodInfo? mi = apiType.GetMethod(name);
             dynamic? result = null;
             if (mi == null) {
@@ -78,7 +78,7 @@ namespace Global {
             } else {
                 try {
                     result = mi.Invoke(null, new object[] { args });
-                    EasyObject okResult = EasyObject.EmptyArray;
+                    Core.CoreObject okResult = Core.CoreObject.EmptyArray;
                     okResult.Add(result);
                     result = okResult;
                 }

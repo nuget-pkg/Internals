@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using static Global.EasyObject;
+using static Core.CoreObject;
 
 #if USE_CSCS_UTIL
 namespace Global {

@@ -16,8 +16,8 @@ namespace Global {
         public JsonApiClient(string dllSpec) {
             string? dllPath = Sys.FindExePath(dllSpec);
             if (dllPath is null) {
-                EasyObject.Log(dllSpec, "dllSpec");
-                EasyObject.Log(dllPath, "dllPath");
+                Core.CoreObject.Log(dllSpec, "dllSpec");
+                Core.CoreObject.Log(dllPath, "dllPath");
                 Environment.Exit(1);
             }
             LoadDll(dllPath!);
@@ -25,8 +25,8 @@ namespace Global {
         public JsonApiClient(string dllSpec, string cwd) {
             string? dllPath = Sys.FindExePath(dllSpec, cwd);
             if (dllPath is null) {
-                EasyObject.Log(dllSpec, "dllSpec");
-                EasyObject.Log(dllPath, "dllPath");
+                Core.CoreObject.Log(dllSpec, "dllSpec");
+                Core.CoreObject.Log(dllPath, "dllPath");
                 Environment.Exit(1);
             }
             LoadDll(dllPath!);
@@ -34,8 +34,8 @@ namespace Global {
         public JsonApiClient(string dllSpec, Assembly assembly) {
             string? dllPath = Sys.FindExePath(dllSpec, assembly);
             if (dllPath is null) {
-                EasyObject.Log(dllSpec, "dllSpec");
-                EasyObject.Log(dllPath, "dllPath");
+                Core.CoreObject.Log(dllSpec, "dllSpec");
+                Core.CoreObject.Log(dllPath, "dllPath");
                 Environment.Exit(1);
             }
             LoadDll(dllPath!);
@@ -47,16 +47,16 @@ namespace Global {
                 Sys.LoadLibraryFlags.LOAD_WITH_ALTERED_SEARCH_PATH
                 );
             if (Handle == IntPtr.Zero) {
-                EasyObject.Log($"DLL not loaded: {dllPath}");
+                Core.CoreObject.Log($"DLL not loaded: {dllPath}");
                 Environment.Exit(1);
             }
             CallPtr = Sys.GetProcAddress(Handle, "Call");
             if (CallPtr == IntPtr.Zero) {
-                EasyObject.Log("Call() not found");
+                Core.CoreObject.Log("Call() not found");
                 Environment.Exit(1);
             }
         }
-        public EasyObject Call(string name, EasyObject args) {
+        public Core.CoreObject Call(string name, Core.CoreObject args) {
             IntPtr pName = Sys.StringToUTF8Addr(name);
             proto_Call pCall = (proto_Call)Marshal.GetDelegateForFunctionPointer(CallPtr, typeof(proto_Call));
             string argsJson = args.ToJson();
@@ -67,12 +67,12 @@ namespace Global {
             Marshal.FreeHGlobal(pName);
             Marshal.FreeHGlobal(pArgsJson);
             if (result.StartsWith("\"")) {
-                string error = EasyObject.FromJson(result)!.Cast<string>();
+                string error = Core.CoreObject.FromJson(result)!.Cast<string>();
                 throw new Exception(error);
             } else if (result.StartsWith("[")) {
-                var list = EasyObject.FromJson(result)!;
+                var list = Core.CoreObject.FromJson(result)!;
                 if (list.Count == 0) {
-                    return EasyObject.FromObject(null);
+                    return Core.CoreObject.FromObject(null);
                 }
 
                 return list[0];
