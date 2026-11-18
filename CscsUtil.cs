@@ -56,14 +56,13 @@ namespace Global {
             var home = Environment.GetEnvironmentVariable("HOME");
             if (home != null)
             {
-                return new DirectoryInfo(home).FullName + "~";
+                return new DirectoryInfo(home).FullName;
             }
             return "";
         }
         private string AdjustPath(string path) {
             if (home != null) {
-                //path = path.Replace(home + @"\", @"$(HOME)\");
-                path = path.Replace(home + @"~", @"$(HOME)\");
+                path = path.Replace(home + @"\", @"$(HOME)\");
             }
             return path;
         }
