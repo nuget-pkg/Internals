@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using static Core.CoreObject;
@@ -39,6 +40,7 @@ namespace Global {
             Debug(IcoList, "IcoList");
         }
         public static string? FindHome(DirectoryInfo dir) {
+#if false
             FileInfo[] files = dir.GetFiles();
             foreach (FileInfo file in files) {
                 if (file.Name == ".bashrc" || file.Name == ".profile") {
@@ -50,10 +52,18 @@ namespace Global {
                 return null;
             }
             return FindHome(parent);
+#endif
+            var home = Environment.GetEnvironmentVariable("HOME");
+            if (home != null)
+            {
+                return new DirectoryInfo(home).FullName + "~";
+            }
+            return "";
         }
         private string AdjustPath(string path) {
             if (home != null) {
-                path = path.Replace(home + @"\", @"$(HOME)\");
+                //path = path.Replace(home + @"\", @"$(HOME)\");
+                path = path.Replace(home + @"~", @"$(HOME)\");
             }
             return path;
         }
